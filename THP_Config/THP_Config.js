@@ -4,12 +4,14 @@ Creates an arrow from a define start point to the end point.  The end point alwa
 @class THM_Arrow
 @param  {object} plugin The monocleGL plugin object.
 @param  {object} lyrParent The layer to add the arrow to.
+@param	{object} bBidirectional If true put a arrow head at the start and the end of the line otherwise put the arrow head at the end of the line.
 @return {void} Nothing
 */
-function THM_Arrow(plugin, lyrParent) {
+function THM_Arrow(plugin, lyrParent, bBidirectional) {
 	// Setup local varibles
     this.plugin = plugin;
 	this.lyrParent = lyrParent;
+	this.bBidirectional = bBidirectional;
 
 	// All the important points for drawing the line
 	this.pntStart = new Point(0,0);
@@ -21,6 +23,12 @@ function THM_Arrow(plugin, lyrParent) {
 	this.vecMain = new circleVector(0,0);
 	this.vecLeft = new circleVector(0,0);
 	this.vecRight = new circleVector(0,0);
+
+	// All the bi-directional stuff
+	this.pntBiRight = new Point(0,0);
+	this.pntBiLeft = new Point(0,0);
+	this.vecBiLeft = new circleVector(0,0);
+	this.vecBiRight = new circleVector(0,0);
 
 	// Arrow presets
 	this.numLegLength = 10;
@@ -46,6 +54,14 @@ function THM_Arrow(plugin, lyrParent) {
 		this.lyrParent.addChild(this.lineMain);
 		this.lyrParent.addChild(this.lineRight);
 		this.lyrParent.addChild(this.lineLeft);
+
+		if(this.bBidirectional) {
+			this.lineBiRight = new Line(this.plugin, 0, 0, 0, 0);
+			this.lineBiLeft = new Line(this.plugin, 0, 0, 0, 0);
+
+			this.lyrParent.addChild(this.lineBiRight);
+			this.lyrParent.addChild(this.lineBiLeft);
+		}
 	};
 
 	/**
@@ -81,6 +97,11 @@ function THM_Arrow(plugin, lyrParent) {
 		this.lineMain.setThickness(thickness);
 		this.lineRight.setThickness(thickness);
 		this.lineLeft.setThickness(thickness);
+
+		if(this.bBidirectional) {
+			this.lineBiRight.setThickness(thickness);
+			this.lineBiLeft.setThickness(thickness);
+		}
 	};
 
 	/**
@@ -95,6 +116,11 @@ function THM_Arrow(plugin, lyrParent) {
 		this.lineMain.setColor(r,g,b,a);
 		this.lineRight.setColor(r,g,b,a);
 		this.lineLeft.setColor(r,g,b,a);
+
+		if(this.bBidirectional) {
+			this.lineBiRight.setColor(r,g,b,a);
+			this.lineBiLeft.setColor(r,g,b,a);
+		}
 	};
 
 	/**
@@ -152,6 +178,31 @@ function THM_Arrow(plugin, lyrParent) {
 		// Set both points of the left leg line
 		this.lineLeft.setPosition(this.pntEnd.x, this.pntEnd.y);
 		this.lineLeft.setDimensions(this.pntLeft.x, this.pntLeft.y);
+
+		if(this.bBidirectional) {
+
+			// Set the vector of the right leg
+			this.vecBiRight.radial = this.numLegLength;
+			this.vecBiRight.theta = 180 + this.vecMain.theta + this.numLegAngle;
+
+			// Get the point based on the right leg vector and arrow start point
+			this.pntBiRight = fastMath.moveVector2D(this.pntStart,this.vecBiRight);
+
+			// Set the vector of the left leg
+			this.vecBiLeft.radial = this.numLegLength;
+			this.vecBiLeft.theta = 180 + this.vecMain.theta - this.numLegAngle;
+
+			// Get the point based on the left leg vector and arrow pntStart point
+			this.pntBiLeft = fastMath.moveVector2D(this.pntStart,this.vecBiLeft);
+
+			// Set both points of the right leg line
+			this.lineBiRight.setPosition(this.pntStart.x, this.pntStart.y);
+			this.lineBiRight.setDimensions(this.pntBiRight.x, this.pntBiRight.y);
+
+			// Set both points of the left leg line
+			this.lineBiLeft.setPosition(this.pntStart.x, this.pntStart.y);
+			this.lineBiLeft.setDimensions(this.pntBiLeft.x, this.pntBiLeft.y);
+		}
 	};
 
 	// Create the item
@@ -953,6 +1004,7 @@ function THM_Relationship (plugin, lyrParent, jRelationship) {
 		this.arrow_thickness = parseInt(readJSON(this.jRelationship.arrow_thickness, "relationship arrow thickness","2"), 10);
 		this.arrow_color = new THM_Color();
 		this.arrow_color.convertHex(readJSON(this.jRelationship.arrow_color, "relationship arrow color","000000"));
+		this.arrow_bidirectional = readJSON(this.jRelationship.arrow_bidirectional, "relationship arrow bidirectionalness","false") === "true";
 
 		// Create the layer for each item
 		this.lyrBG = new Layer(this.plugin, this.x, this.y, this.width, 20);
@@ -961,7 +1013,7 @@ function THM_Relationship (plugin, lyrParent, jRelationship) {
 
 		// If the arrow is not using all of the default positions then create an arrow for this relationship
 		if(this.arrow_start_x !== 0 && this.arrow_start_y !== 0 && this.arrow_end_x !== 0 && this.arrow_end_y !== 0) {
-			this.arrow = new THM_Arrow(this.plugin, this.lyrParent);
+			this.arrow = new THM_Arrow(this.plugin, this.lyrParent, this.arrow_bidirectional);
 			this.arrow.setStart(this.arrow_start_x, this.arrow_start_y);
 			this.arrow.setEnd(this.arrow_end_x, this.arrow_end_y);
 			this.arrow.setThickness(this.arrow_thickness);

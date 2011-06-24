@@ -33,6 +33,7 @@ function THM_Relationship (plugin, lyrParent, jRelationship) {
 		this.arrow_thickness = parseInt(readJSON(this.jRelationship.arrow_thickness, "relationship arrow thickness","2"), 10);
 		this.arrow_color = new THM_Color();
 		this.arrow_color.convertHex(readJSON(this.jRelationship.arrow_color, "relationship arrow color","000000"));
+		this.arrow_bidirectional = readJSON(this.jRelationship.arrow_bidirectional, "relationship arrow bidirectionalness","false") === "true";
 
 		// Create the layer for each item
 		this.lyrBG = new Layer(this.plugin, this.x, this.y, this.width, 20);
@@ -41,7 +42,7 @@ function THM_Relationship (plugin, lyrParent, jRelationship) {
 
 		// If the arrow is not using all of the default positions then create an arrow for this relationship
 		if(this.arrow_start_x !== 0 && this.arrow_start_y !== 0 && this.arrow_end_x !== 0 && this.arrow_end_y !== 0) {
-			this.arrow = new THM_Arrow(this.plugin, this.lyrParent);
+			this.arrow = new THM_Arrow(this.plugin, this.lyrParent, this.arrow_bidirectional);
 			this.arrow.setStart(this.arrow_start_x, this.arrow_start_y);
 			this.arrow.setEnd(this.arrow_end_x, this.arrow_end_y);
 			this.arrow.setThickness(this.arrow_thickness);
