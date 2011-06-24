@@ -1,5 +1,12 @@
-//------------------------------------------------------------------------------
-// The target element built by JSON
+/**
+The target element built by JSON.
+@class THM_Target
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The layer to add the target to.
+@param  {number} numTarget The number of the target, this value will be returned from a callback.
+@param  {object} jTarget The JSON configuration for this target.
+@return {void} Nothing
+*/
 function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 	this.plugin = plugin;
 	this.lyrParent = lyrParent;
@@ -9,7 +16,11 @@ function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 	this.funcScope = undefined;
 	this.bHit = false;
 
-	// Create the Target
+	/**
+	Setup the target and add it to the passed parent.  Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		// Read the x,y location the width and height of the target
 		this.x = parseInt(readJSON(this.jTarget.x, "target x","0"),10);
@@ -57,25 +68,42 @@ function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 		this.lyrParent.addChild(this.lyrBG);
 	};
 
-	// The target is clicked callback function
+	/**
+	The callback that gets triggered whenever user clicks on the target.
+	@param  {number} x The x position of the mouse.
+	@param  {number} y The y position of the mouse.
+	@return {void} Nothing
+	*/
 	this.targetClick = function(x,y) {
 		this.isClicked(this.numTarget);
 	};
 
-	// This callback notifies the demo when a target is clicked
+	/**
+	This callback notifies the demo when a target is clicked.
+	@param  {number} numObject The value to passed along to the demo.
+	@return {void} Nothing
+	*/
 	this.isClicked = function(numObject) {
 		if(this.funcClick !== undefined && this.funcScope !== undefined) {
 			this.funcClick.apply(this.funcScope, arguments);
 		}
 	};
 
-	// Subscribe the target and show the enabled sprite
+	/**
+	Subscribe the target and show the enabled sprite.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.enable = function() {
 		this.clear();
 		this.sprEnabled.subscribe();
 	};
 
-	// Unsubscribe the target and show the disabled sprite
+	/**
+	Unsubscribe the target and show the disabled sprite.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.disable = function() {
 		this.sprEnabled.setVisibility(false);
 		this.sprHit.setVisibility(false);
@@ -83,7 +111,11 @@ function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 		this.sprEnabled.unsubscribe();
 	};
 
-	// Show the hit sprite and set the hit boolean
+	/**
+	Show the hit sprite and set the hit boolean.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.hit = function() {
 		this.sprEnabled.setVisibility(false);
 		this.sprDisabled.setVisibility(false);
@@ -91,7 +123,11 @@ function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 		this.bHit = true;
 	};
 
-	// Show the enabled sprite and clear the hit boolean
+	/**
+	Show the enabled sprite and clear the hit boolean.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.clear = function() {
 		this.sprDisabled.setVisibility(false);
 		this.sprHit.setVisibility(false);
@@ -99,7 +135,11 @@ function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 		this.bHit = false;
 	};
 
-	// Toggle inbetween the hit and enabled sprites
+	/**
+	Toggle inbetween the hit and enabled sprites.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.toggle = function() {
 		if(this.bHit) {
 			this.clear();
@@ -108,7 +148,11 @@ function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 		}
 	};
 
-	// Show the answer for the this target
+	/**
+	Show the answer for the this target.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showAnswer = function() {
 		if(this.correct) {
 			this.hit();
@@ -117,7 +161,11 @@ function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 		}
 	};
 
-	// Check if the hit boolean matchs JSON correct answer
+	/**
+	Check if the hit boolean matchs JSON correct answer.
+	@param  {void} Nothing
+	@return {boolean} True if this target is set corectly and false otherwise.
+	*/
 	this.check = function() {
 		return this.correct === this.bHit;
 	};
@@ -126,8 +174,14 @@ function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 }
 THM_Target.prototype = new Osmosis();
 
-//------------------------------------------------------------------------------
-// The target map style question built by JSON
+/**
+The target map style question built by JSON
+@class THM_ClickOnTargetQuestion
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} configuration The JSON configuration for this question.
+@param  {object} thmDemo The refernce to the THM_Template object for inheritence.
+@return {void} Nothing
+*/
 function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
 	// Scene specfic values
 	this.plugin = plugin;
@@ -153,7 +207,11 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
     this.currentTargets = [];
     this.last = -1;
 
-    // The callback from an item that's its being dragged
+	/**
+	This callback notifies the demo when a target is clicked.
+	@param  {number} numTarget The value to passed along to the demo.
+	@return {void} Nothing
+	*/
 	this.isClicked = function(numTarget) {
 		// If single answer mode is on and the last number is valid then clear that target
 		if(this.last !== -1 && this.last !== numTarget && !this.multipleAnswers) {
@@ -167,7 +225,11 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
 		this.last = numTarget;
 	};
 
-	// Set the initialize function for a target map question
+	/**
+	Overload the initialize function for a target map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.initQuiz = function() {
 		logDebug("Click on target map question initQuiz()");
 		var i = 0;
@@ -288,7 +350,12 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
 		this.bgLayer.addChild(rectInstruction);
 	};
 
-	// Set the display function for a target map question
+
+	/**
+	Overload the display function for a target map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.loadQuiz = function() {
 		logDebug("Click on target question loadQuiz()");
 
@@ -318,20 +385,32 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
 		this.last = -1;
 	};
 
-	// Set the clean up function for a target map question
+	/**
+	Overload the clean up function for a target map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.cleanUp = function() {
 		logDebug("Click on target question cleanUp()");
 		// Resize the image to it's original size and unsubscribe it
 		this.lyrDrag.unsubscribe();
 	};
 
-	// Set the reset function for a target map question
+	/**
+	Overload the reset function for a target map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.resetQuiz = function() {
 		logDebug("Click on target question resetQuiz()");
 		this.loadQuiz();
 	};
 
-	// Set the show correct answer function for a target map question
+	/**
+	Overload the show correct answer function for a target map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showCorrectAnswer = function() {
 		logDebug("Click on target question showCorrectAnswer()");
 		// Show the answer for all the targets for this question
@@ -340,7 +419,11 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
 		}
 	};
 
-	// Set the check answer function for a target map question
+	/**
+	Overload the check answer function for a target map question.
+	@param  {void} Nothing
+	@return {boolean} True if the question is correct and false otherwise.
+	*/
 	this.checkAnswer = function() {
 		logDebug("Click on target question checkAnswer()");
 		var bResult = true;
@@ -351,46 +434,77 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
 		return bResult;
 	};
 
-	// Plugin call to add the scene
-	this.addScene = function() {
+	/**
+	Adds this scene to the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
+    this.addScene = function() {
         this.plugin.addScene(this.id);
     };
 
-	// Plugin call to move to the next scene
+	/**
+	Changes to the next scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.nextScene = function() {
         this.plugin.nextScene();
     };
 
-	// Plugin call to move to the previous scene
+	/**
+	Changes to the previous scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.prevScene = function() {
         this.plugin.prevScene();
     };
 
-	// Plugin call to move to the set the scene
+	/**
+	Sets the current scene to this one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.setScene = function() {
         this.plugin.setScene(this.getId());
     };
 
-	// Set the number of tries for the question
+	/**
+	Sets the number of tries for this scene.
+	@param  {number} tries The number of tries for this scene
+	@return {void} Nothing
+	*/
     this.setTries = function(tries) {
         if(typeof tries !== "number") {
-            logError("tries must have a value of type 'number'");
             return;
         }
         this.tries = tries;
     };
 
-	// Decrement the number of tries by one
+	/**
+	Decrements the number of tries by one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.decrementTries = function() {
         if(!(this.tries === 0)) {
             this.tries = this.tries - 1;
         }
     };
 
-	// Return the number of tries
+	/**
+	Gets the number of tries for this scene.
+	@param  {void} Nothing
+	@return {number} The number of tries for this scene
+	*/
     this.getTries = function() { return this.tries; };
 
-	// Set the boolean flag of if the question is correct
+	/**
+	Sets if the scene is correct
+	@param  {boolean} correct True if this scene is correct and false otherwise
+	@return {void} Nothing
+	*/
     this.setCorrect = function(correct) {
         if(typeof correct !== "boolean") {
             logError("correct must have a value of type 'boolean'");
@@ -400,10 +514,18 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
         this.completed = true;
     };
 
-	// Return the boolean flag of if the question is correct
+	/**
+	Gets if the scene is correct
+	@param  {void} Nothing
+	@return {boolean} True if this scene is correct and false otherwise
+	*/
     this.getCorrect = function() { return this.correct; };
 
-	// Set the boolean flag of if the question is complete
+	/**
+	Sets if the scene is completed
+	@param  {boolean} completed True if this scene is completed and false otherwise
+	@return {void} Nothing
+	*/
     this.setCompleted = function(completed) {
         if(typeof completed !== "boolean") {
             logError("completed must have a value of type 'boolean'");
@@ -412,10 +534,18 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
         this.completed = completed;
     };
 
-	// Return the boolean flag of if the question is complete
+	/**
+	Gets if the scene is completed
+	@param  {void} Nothing
+	@return {boolean} True if this scene is completed and false otherwise
+	*/
     this.getCompleted = function() { return this.completed; };
 
-	// Set the boolean flag of if the server has responded
+	/**
+	Sets if the scene status has been recieved by the server
+	@param  {boolean} serverStatus True if this scenes status has been recieved by the server and false otherwise
+	@return {void} Nothing
+	*/
     this.setServerStatus = function(serverStatus) {
         if(typeof serverStatus !== "boolean") {
             logError("serverStatus must have a value of type 'boolean'");
@@ -424,7 +554,11 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
         this.serverStatus = serverStatus;
     };
 
-	// Return the boolean flag of if the server has responded
+	/**
+	Gets if the scene status has been recieved by the server
+	@param  {void} Nothing
+	@return {boolean} True if this scenes status has been recieved by the server and false otherwise
+	*/
     this.getServerStatus = function() { return this.serverStatus; };
-};
+}
 THM_ClickOnTargetQuestion.prototype = new Osmosis();

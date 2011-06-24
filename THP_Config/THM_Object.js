@@ -1,5 +1,12 @@
-//------------------------------------------------------------------------------
-// A generic object with a background rectangle and label
+/**
+A generic object with a background rectangle and label
+@class THM_Object
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The parent layer to add these objects too.
+@param  {number} numObject The number to passed along in callbacks.
+@param  {object} jObject The object JSON defination.
+@return {void} Nothing
+*/
 function THM_Object(plugin, lyrParent, numObject, jObject) {
 	// Setup local varibles
     this.plugin = plugin;
@@ -13,7 +20,11 @@ function THM_Object(plugin, lyrParent, numObject, jObject) {
 	// The minimum amount the layout can span
 	this.minPercent = 0.25;
 
-	// Setup the item and add it to the passed parent
+	/**
+	Creates the item and adds it to the passed parent. Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		this.name = readJSON(this.jObject.name, "object " + this.numObject + " name","untitled");
 
@@ -78,7 +89,11 @@ function THM_Object(plugin, lyrParent, numObject, jObject) {
 		this.lyrParent.addChild(this.lyrItem);
 	};
 
-	// Preform any layout organizing needed
+	/**
+	Preforms any layout organizing needed. Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.layout = function() {
 		var rectImage = new Rectangle(this.sprItem.x, this.sprItem.y, this.sprItem.width, this.sprItem.height);
 		var rectText = new Rectangle(this.lblItem.x, this.lblItem.y, this.lblItem.width, this.lblItem.height);
@@ -184,13 +199,22 @@ function THM_Object(plugin, lyrParent, numObject, jObject) {
 		this.lblItem.setDimensions(rectText.width, rectText.height);
 	}
 
-	// Send the object to the front of the display list
+	/**
+	Send the object to the front of the display list.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.sendToFront = function() {
 		this.lyrParent.removeChild(this.lyrItem);
 		this.lyrParent.addChild(this.lyrItem);
 	}
 
-	// The start drag callback function
+	/**
+	Triggered when the user start dragging object.
+	@param  {number} x The x position of the mouse.
+	@param  {number} y The y position of the mouse.
+	@return {void} Nothing
+	*/
 	this.startDrag = function(x,y) {
 		if(this.bBringToFront) {
 			this.sendToFront();
@@ -200,46 +224,90 @@ function THM_Object(plugin, lyrParent, numObject, jObject) {
 		this.isDragging(this.numObject, true);
 	};
 
-	// The stop drag callback function
+	/**
+	Triggered when the user stastopsrt dragging object.
+	@param  {number} x The x position of the mouse.
+	@param  {number} y The y position of the mouse.
+	@return {void} Nothing
+	*/
 	this.stopDrag = function(x,y) {
 		this.x = x;
 		this.y = y;
 		this.isDragging(this.numObject, false);
 	};
 
-	// This callback notifies the demo when an item is dragging
+	/**
+	This callback notifies the question when the line is being dragging.
+	@param  {number} numObject The index of the object clicked on.
+	@param  {number} bDragging True if the mouse is down and false otherwise.
+	@return {void} Nothing
+	*/
 	this.isDragging = function(numObject, bDragging) {
 		if(this.funcDrag !== undefined && this.funcScope !== undefined) {
 			this.funcDrag.apply(this.funcScope, arguments);
 		}
 	};
 
-	// Wrapper subscribe function
+	/**
+	Shortcut to subscribe the draggble line.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.subscribe = function() {
 		this.lyrItem.subscribe();
 	};
 
-	// Wrapper unsubscribe function
+	/**
+	Shortcut to unsubscribe the draggble line.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.unsubscribe = function() {
 		this.lyrItem.unsubscribe();
 	};
 
+	/**
+	Set up a color tween of the background rectangle.
+	@param  {number} r The new amount of red (range 0 to 1).
+	@param  {number} g The new amount of green (range 0 to 1).
+	@param  {number} b The new amount of blue (range 0 to 1).
+	@param  {number} a The new amount of alpha (range 0 to 1).
+	@param  {number} time The amount of time the tween will take.
+	@param  {number} delay The amount of time to wait before starting the tween.
+	@return {void} Nothing
+	*/
 	this.colorTween = function(r, g, b, a, time, delay) {
 		this.strLastColor.setColor(this.strBgColor.r, this.strBgColor.g, this.strBgColor.b, this.strBgColor.a);
 		this.strBgColor.setColor(r, g, b, a);
 		this.rectItem.addTween("red:" + r + ",green:" + g + ",blue:" + b + ",alpha:" + a + ",time:" + time + ",delay:" + delay);
 	}
 
+	/**
+	Set up a color tween of the background rectangle back to it's original color.
+	@param  {number} time The amount of time the tween will take.
+	@param  {number} delay The amount of time to wait before starting the tween.
+	@return {void} Nothing
+	*/
 	this.originalTween = function(time, delay) {
 		this.rectItem.addTween("red:" + this.strOrgColor.r + ",green:" + this.strOrgColor.g + ",blue:" + this.strOrgColor.b + ",alpha:" + this.strOrgColor.a + ",time:" + time + ",delay:" + delay);
 	}
 
+	/**
+	Set up a color tween of the background rectangle back to it's last color.
+	@param  {number} time The amount of time the tween will take.
+	@param  {number} delay The amount of time to wait before starting the tween.
+	@return {void} Nothing
+	*/
 	this.resetTween = function(time, delay) {
 		this.strBgColor.setColor(this.strLastColor.r, this.strLastColor.g, this.strLastColor.b, this.strLastColor.a);
 		this.rectItem.addTween("red:" + this.strLastColor.r + ",green:" + this.strLastColor.g + ",blue:" + this.strLastColor.b + ",alpha:" + this.strLastColor.a + ",time:" + time + ",delay:" + delay);
 	}
 
-	// The answer animation routine
+	/**
+	The answer animation routine.
+	@param  {boolean} bCorrect If true color rectangle green else color rectangle red.
+	@return {void} Nothing
+	*/
 	this.showCorrect = function(bCorrect) {
 		// If correct tween green
 		if(bCorrect) {

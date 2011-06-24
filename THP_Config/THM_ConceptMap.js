@@ -1,11 +1,21 @@
-//------------------------------------------------------------------------------
-// The concept element built by JSON
+/**
+The relationship element built by JSON
+@class THM_Relationship
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The layer to add the relationship to.
+@param  {object} jRelationship The JSON configuration for this relationship.
+@return {void} Nothing
+*/
 function THM_Relationship (plugin, lyrParent, jRelationship) {
 	this.plugin = plugin;
 	this.lyrParent = lyrParent;
 	this.jRelationship = jRelationship;
 
-	// Create the relationship
+	/**
+	Setup the relationship and add it to the passed parent.  Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		// Read the relationship details from JSON
 		this.x = parseInt(readJSON(this.jRelationship.x, "relationship x","0"), 10);
@@ -58,7 +68,11 @@ function THM_Relationship (plugin, lyrParent, jRelationship) {
 		this.lyrParent.addChild(this.lyrBG)
 	};
 
-	// Subscribe the drop down and clear the color overlay
+	/**
+	Subscribe the drop down and clear the color overlay.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.enable = function() {
 		// Subscribe and reset drop down
 		this.dd.subscribe();
@@ -73,7 +87,11 @@ function THM_Relationship (plugin, lyrParent, jRelationship) {
 		this.lyrColor.addTween("red:0,green:0,blue:0,alpha:0,time:1");
 	};
 
-	// Unsubscribe the drop down and set a grey color overlay
+	/**
+	Unsubscribe the drop down and set a grey color overlay.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.disable = function() {
 		// Unsubscribe and reset drop down
 		this.dd.unsubscribe();
@@ -84,7 +102,11 @@ function THM_Relationship (plugin, lyrParent, jRelationship) {
 		this.lyrColor.addTween("red:0,green:0,blue:0,alpha:0.33,time:1");
 	};
 
-	// Unsubscribe the drop down and set a green color overlay
+	/**
+	Unsubscribe the drop down and set a green color overlay.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showAnswer = function() {
 		// Unsubscribe and set drop down to show the answer
 		this.dd.unsubscribe();
@@ -95,7 +117,11 @@ function THM_Relationship (plugin, lyrParent, jRelationship) {
 		this.lyrColor.addTween("red:0.5,green:1.0,blue:0.45,alpha:0.33,time:1");
 	};
 
-	// Check if the drop down is correct and animate the color overlay
+	/**
+	Check if the drop down is correct and animate the color overlay.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.check = function() {
 		var bResult = this.dd.getText() === this.strAnswer;
 
@@ -117,15 +143,25 @@ function THM_Relationship (plugin, lyrParent, jRelationship) {
 }
 THM_Relationship.prototype = new Osmosis();
 
-//------------------------------------------------------------------------------
-// The background layer with all the concepts and relationships on it for dragging
+/**
+The background layer with all the concepts and relationships on it for dragging
+@class THM_ConceptMap
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The layer to add the concepts to.
+@param  {object} jConcepts The JSON configuration for this concepts.
+@return {void} Nothing
+*/
 function THM_ConceptMap (plugin, parentLayer, jConcepts) {
 	this.plugin = plugin;
 	this.parentLayer = parentLayer;
 	this.jConcepts = jConcepts;
 	this.concepts = [];
 
-	// Create the concept map based on the JSON definations
+	/**
+	Create the concept map based on the JSON definations.  Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		var i;
 
@@ -165,8 +201,14 @@ function THM_ConceptMap (plugin, parentLayer, jConcepts) {
 }
 THM_ConceptMap.prototype = new Osmosis();
 
-//------------------------------------------------------------------------------
-// The concept map style question built by JSON
+/**
+The concept map style question built by JSON
+@class THM_ConceptMapQuestion
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} configuration The JSON configuration for this question.
+@param  {object} thmDemo The refernce to the THM_Template object for inheritence.
+@return {void} Nothing
+*/
 function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
 
 	// Scene specfic values
@@ -192,7 +234,11 @@ function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
     this.allRelationships = [];
     this.currentRelationships = [];
 
-	// Set the initialize function for a concept map question
+	/**
+	Overload the initialize function for a concept map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.initQuiz = function() {
 		logDebug("Concept map question initQuiz()");
 
@@ -267,7 +313,11 @@ function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
 		this.bgLayer.addChild(rectInstruction);
 	};
 
-	// Set the display function for a concept map question
+	/**
+	Overload the display function for a concept map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.loadQuiz = function() {
 		logDebug("Concept map question loadQuiz()");
 
@@ -291,19 +341,31 @@ function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
 		}
 	};
 
-	// Set the clean up function for a concept map question
+	/**
+	Overload the clean up function for a concept map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.cleanUp = function() {
 		logDebug("Concept map question cleanUp()");
 		this.cMap.unsubscribe();
 	};
 
-	// Set the reset function for a concept map question
+	/**
+	Overload the reset function for a concept map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.resetQuiz = function() {
 		logDebug("Concept map question resetQuiz()");
 		this.loadQuiz();
 	};
 
-	// Set the show correct answer function for a concept map question
+	/**
+	Overload the show correct answer function for a concept map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showCorrectAnswer = function() {
 		logDebug("Concept map question showCorrectAnswer()");
 		// Show the answer for all the labels for this question
@@ -312,7 +374,11 @@ function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
 		}
 	};
 
-	// Set the check answer function for a concept map question
+	/**
+	Overload the check answer function for a concept map question.
+	@param  {void} Nothing
+	@return {boolean} True if the question is correct and false otherwise.
+	*/
 	this.checkAnswer = function() {
 		logDebug("Concept map question checkAnswer()");
 		var bResult = true;
@@ -323,46 +389,77 @@ function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
 		return bResult;
 	};
 
-	// Plugin call to add the scene
-	this.addScene = function() {
+	/**
+	Adds this scene to the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
+    this.addScene = function() {
         this.plugin.addScene(this.id);
     };
 
-	// Plugin call to move to the next scene
+	/**
+	Changes to the next scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.nextScene = function() {
         this.plugin.nextScene();
     };
 
-	// Plugin call to move to the previous scene
+	/**
+	Changes to the previous scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.prevScene = function() {
         this.plugin.prevScene();
     };
 
-	// Plugin call to move to the set the scene
+	/**
+	Sets the current scene to this one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.setScene = function() {
         this.plugin.setScene(this.getId());
     };
 
-	// Set the number of tries for the question
+	/**
+	Sets the number of tries for this scene.
+	@param  {number} tries The number of tries for this scene
+	@return {void} Nothing
+	*/
     this.setTries = function(tries) {
         if(typeof tries !== "number") {
-            logError("tries must have a value of type 'number'");
             return;
         }
         this.tries = tries;
     };
 
-	// Decrement the number of tries by one
+	/**
+	Decrements the number of tries by one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.decrementTries = function() {
         if(!(this.tries === 0)) {
             this.tries = this.tries - 1;
         }
     };
 
-	// Return the number of tries
+	/**
+	Gets the number of tries for this scene.
+	@param  {void} Nothing
+	@return {number} The number of tries for this scene
+	*/
     this.getTries = function() { return this.tries; };
 
-	// Set the boolean flag of if the question is correct
+	/**
+	Sets if the scene is correct
+	@param  {boolean} correct True if this scene is correct and false otherwise
+	@return {void} Nothing
+	*/
     this.setCorrect = function(correct) {
         if(typeof correct !== "boolean") {
             logError("correct must have a value of type 'boolean'");
@@ -372,10 +469,18 @@ function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
         this.completed = true;
     };
 
-	// Return the boolean flag of if the question is correct
+	/**
+	Gets if the scene is correct
+	@param  {void} Nothing
+	@return {boolean} True if this scene is correct and false otherwise
+	*/
     this.getCorrect = function() { return this.correct; };
 
-	// Set the boolean flag of if the question is complete
+	/**
+	Sets if the scene is completed
+	@param  {boolean} completed True if this scene is completed and false otherwise
+	@return {void} Nothing
+	*/
     this.setCompleted = function(completed) {
         if(typeof completed !== "boolean") {
             logError("completed must have a value of type 'boolean'");
@@ -384,10 +489,18 @@ function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
         this.completed = completed;
     };
 
-	// Return the boolean flag of if the question is complete
+	/**
+	Gets if the scene is completed
+	@param  {void} Nothing
+	@return {boolean} True if this scene is completed and false otherwise
+	*/
     this.getCompleted = function() { return this.completed; };
 
-	// Set the boolean flag of if the server has responded
+	/**
+	Sets if the scene status has been recieved by the server
+	@param  {boolean} serverStatus True if this scenes status has been recieved by the server and false otherwise
+	@return {void} Nothing
+	*/
     this.setServerStatus = function(serverStatus) {
         if(typeof serverStatus !== "boolean") {
             logError("serverStatus must have a value of type 'boolean'");
@@ -396,7 +509,11 @@ function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
         this.serverStatus = serverStatus;
     };
 
-	// Return the boolean flag of if the server has responded
+	/**
+	Gets if the scene status has been recieved by the server
+	@param  {void} Nothing
+	@return {boolean} True if this scenes status has been recieved by the server and false otherwise
+	*/
     this.getServerStatus = function() { return this.serverStatus; };
-};
+}
 THM_ConceptMapQuestion.prototype = new Osmosis();

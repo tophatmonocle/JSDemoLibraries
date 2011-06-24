@@ -739,7 +739,7 @@ function Osmosis() {
     };
 
 	/**
-	Notifies the plugin that this node does not want to recieve events.
+	Notifies the plugin that this node does NOT want to recieve events.
 	@param  {void} Nothing
 	@return {void} Nothing
 	*/

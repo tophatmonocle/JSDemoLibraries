@@ -1,6 +1,12 @@
 var mediaURL, slugUUID;
-//------------------------------------------------------------------------------
-// Preamble & initialization
+/**
+Build a demo from the passed in demo configuration.
+@class buildDemo
+@param  {object} plugin The monocleGL plugin object.
+@param  {string} media The URL location of the images resources.
+@param  {object} demoJSON The demo JSON configuration to build the demo off of.
+@return {void} Nothing
+*/
 function buildDemo(plugin, media, demoJSON) {
 	// Read the mediaURL and slugUUID from JSON
 	mediaURL = readJSON(demoJSON.mediaURL, "media url", media);

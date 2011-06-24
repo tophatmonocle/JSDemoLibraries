@@ -1,5 +1,16 @@
-//------------------------------------------------------------------------------
-// The ordering grid that notifies the demo when the mouse goes over a new part of the grid
+/**
+The ordering grid that notifies the demo when the mouse goes over a new part of the grid
+@class THM_OrderGrid
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The parent layer to add this grid too.
+@param  {number} x The x position of the grid.
+@param  {number} y The y position of the grid.
+@param  {number} width The width of the grid.
+@param  {number} height The height of the grid.
+@param  {number} object The number of objects in grid.
+@param  {boolean} layout If true the layout is horizontal else the layout is vertical.
+@return {void} Nothing
+*/
 function THM_OrderGrid(plugin, lyrParent, x, y, width, height, objects, layout) {
 	// Setup local varibles
     this.plugin = plugin;
@@ -15,14 +26,18 @@ function THM_OrderGrid(plugin, lyrParent, x, y, width, height, objects, layout) 
 	this.funcGrid = undefined;
 	this.funcScope = undefined;
 
-	// Setup the grid and add it to the passed parent
+	/**
+	Creates the grid and adds it to the passed parent. Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		// Create the layer for each item
 		this.lyrGrid = new Layer(this.plugin, this.x, this.y, this.width, this.height);
 		this.lyrGrid.setColor(0,0,0,0);
 		this.id = this.lyrGrid.id;
 
-		//Create each section of the grid and assign a callback based on the grid position
+		// Create each section of the grid and assign a callback based on the grid position.
 		var strCall;
 		this.sprGrid = [];
 		for(var i = 0; i < this.objects; i++) {
@@ -54,21 +69,33 @@ function THM_OrderGrid(plugin, lyrParent, x, y, width, height, objects, layout) 
 	this.mouseOver8 = function(x,y) { this.overGrid(8); };
 	this.mouseOver9 = function(x,y) { this.overGrid(9); };
 
-	// Wrapper subscribe function
+	/**
+	Shortcut to subscribe the grid
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.subscribe = function() {
 		for(var i = 0; i < this.objects; i++) {
 			this.sprGrid[i].subscribe();
 		}
 	};
 
-	// Wrapper unsubscribe function
+	/**
+	Shortcut to unsubscribe the grid
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.unsubscribe = function() {
 		for(var i = 0; i < this.objects; i++) {
 			this.sprGrid[i].unsubscribe();
 		}
 	};
 
-	// This callback notifies the demo when the mouse goes over a new part of the grid
+	/**
+	This callback notifies the demo when the mouse goes over a new part of the grid.
+	@param  {number} gridNumber The index of the of the part of the grid the user is over.
+	@return {void} Nothing
+	*/
 	this.overGrid = function(gridNumber) {
 		if(this.funcGrid !== undefined && this.funcScope !== undefined) {
 			this.funcGrid.apply(this.funcScope, arguments);
@@ -80,8 +107,13 @@ function THM_OrderGrid(plugin, lyrParent, x, y, width, height, objects, layout) 
 }
 THM_OrderGrid.prototype = new Osmosis();
 
-//------------------------------------------------------------------------------
-// The ordering style question built by JSON
+/**
+The ordering style question built by JSON
+@class THM_OrderingQuestion
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} configuration The JSON definetion of this question.
+@return {void} Nothing
+*/
 function THM_OrderingQuestion (plugin, configuration) {
 
 	// Scene specfic values
@@ -126,7 +158,11 @@ function THM_OrderingQuestion (plugin, configuration) {
 	this.placeHolder = 0;
 	this.bIsDragging = false;
 
-	// The reposition the items based on the arrOrder
+	/**
+	The reposition the items based on the arrOrder
+	@param  {boolean} bAnimate If true animate the objects to the correct positions otherwise warp them.
+	@return {void} Nothing
+	*/
 	this.positionOrder = function(bAnimate) {
 		var newX;
 		var newY;
@@ -163,7 +199,11 @@ function THM_OrderingQuestion (plugin, configuration) {
 		}
 	};
 
-	// The callback from the grid of whre in the grid the mouse is
+	/**
+	The callback from the grid of whre in the grid the mouse is.
+	@param  {number} gridNumber The index value of the part of the grid the mouse is over.
+	@return {void} Nothing
+	*/
 	this.overGrid = function(gridNumber) {
 		if(this.bIsDragging) {
 			// Remove the element for the order array
@@ -180,7 +220,12 @@ function THM_OrderingQuestion (plugin, configuration) {
 		}
 	};
 
-	// The callback from an item that's its being dragged
+	/**
+	The callback from an object that's its being dragged
+	@param  {number} numObject The index of the object clicked on.
+	@param  {number} bDragging True if the mouse is down and false otherwise.
+	@return {void} Nothing
+	*/
 	this.isDragging = function(numItem, bDragging) {
 		var i = 0;
 		this.bIsDragging = bDragging;
@@ -207,7 +252,11 @@ function THM_OrderingQuestion (plugin, configuration) {
 		}
 	};
 
-	// Set the initialize function for a ordering question
+	/**
+	Overload the initialize function for a ordering question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.initQuiz = function() {
 		logDebug("Ordering question initQuiz()");
 
@@ -278,7 +327,11 @@ function THM_OrderingQuestion (plugin, configuration) {
 		}
 	};
 
-	// Set the display function for a ordering question
+	/**
+	Overload the display function for a ordering question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.loadQuiz = function() {
 		logDebug("Ordering question loadQuiz()");
 		// Set the items back to the original order
@@ -294,7 +347,11 @@ function THM_OrderingQuestion (plugin, configuration) {
 		this.grid.subscribe();
 	};
 
-	// Set the clean up function for a ordering question
+	/**
+	Overload the clean up function for a ordering question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.cleanUp = function() {
 		logDebug("Ordering question cleanUp()");
 		// Remove all the subscriptions for this question
@@ -304,12 +361,20 @@ function THM_OrderingQuestion (plugin, configuration) {
 		this.grid.unsubscribe();
 	};
 
-	// Set the reset function for a ordering question
+	/**
+	Overload the reset function for a ordering question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.resetQuiz = function() {
 		logDebug("Ordering question resetQuiz()");
 	};
 
-	// Set the show correct answer function for Q1
+	/**
+	Overload the show correct answer function for a ordering question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showCorrectAnswer = function() {
 		logDebug("Ordering question showCorrectAnswer()");
 
@@ -323,7 +388,11 @@ function THM_OrderingQuestion (plugin, configuration) {
 		this.positionOrder(true);
 	};
 
-	// Set the check answer function for a ordering question
+	/**
+	Overload the check answer function for a ordering question.
+	@param  {void} Nothing
+	@return {boolean} True if correct and false otherwise.
+	*/
 	this.checkAnswer = function() {
 		logDebug("Ordering question checkAnswer()");
 
@@ -340,46 +409,77 @@ function THM_OrderingQuestion (plugin, configuration) {
 		return bResult;
 	};
 
-	// Plugin call to add the scene
-	this.addScene = function() {
+	/**
+	Adds this scene to the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
+    this.addScene = function() {
         this.plugin.addScene(this.id);
     };
 
-	// Plugin call to move to the next scene
+	/**
+	Changes to the next scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.nextScene = function() {
         this.plugin.nextScene();
     };
 
-	// Plugin call to move to the previous scene
+	/**
+	Changes to the previous scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.prevScene = function() {
         this.plugin.prevScene();
     };
 
-	// Plugin call to move to the set the scene
+	/**
+	Sets the current scene to this one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.setScene = function() {
         this.plugin.setScene(this.getId());
     };
 
-	// Set the number of tries for the question
+	/**
+	Sets the number of tries for this scene.
+	@param  {number} tries The number of tries for this scene
+	@return {void} Nothing
+	*/
     this.setTries = function(tries) {
         if(typeof tries !== "number") {
-            logError("tries must have a value of type 'number'");
             return;
         }
         this.tries = tries;
     };
 
-	// Decrement the number of tries by one
+	/**
+	Decrements the number of tries by one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.decrementTries = function() {
         if(!(this.tries === 0)) {
             this.tries = this.tries - 1;
         }
     };
 
-	// Return the number of tries
+	/**
+	Gets the number of tries for this scene.
+	@param  {void} Nothing
+	@return {number} The number of tries for this scene
+	*/
     this.getTries = function() { return this.tries; };
 
-	// Set the boolean flag of if the question is correct
+	/**
+	Sets if the scene is correct
+	@param  {boolean} correct True if this scene is correct and false otherwise
+	@return {void} Nothing
+	*/
     this.setCorrect = function(correct) {
         if(typeof correct !== "boolean") {
             logError("correct must have a value of type 'boolean'");
@@ -389,10 +489,18 @@ function THM_OrderingQuestion (plugin, configuration) {
         this.completed = true;
     };
 
-	// Return the boolean flag of if the question is correct
+	/**
+	Gets if the scene is correct
+	@param  {void} Nothing
+	@return {boolean} True if this scene is correct and false otherwise
+	*/
     this.getCorrect = function() { return this.correct; };
 
-	// Set the boolean flag of if the question is complete
+	/**
+	Sets if the scene is completed
+	@param  {boolean} completed True if this scene is completed and false otherwise
+	@return {void} Nothing
+	*/
     this.setCompleted = function(completed) {
         if(typeof completed !== "boolean") {
             logError("completed must have a value of type 'boolean'");
@@ -401,10 +509,18 @@ function THM_OrderingQuestion (plugin, configuration) {
         this.completed = completed;
     };
 
-	// Return the boolean flag of if the question is complete
+	/**
+	Gets if the scene is completed
+	@param  {void} Nothing
+	@return {boolean} True if this scene is completed and false otherwise
+	*/
     this.getCompleted = function() { return this.completed; };
 
-	// Set the boolean flag of if the server has responded
+	/**
+	Sets if the scene status has been recieved by the server
+	@param  {boolean} serverStatus True if this scenes status has been recieved by the server and false otherwise
+	@return {void} Nothing
+	*/
     this.setServerStatus = function(serverStatus) {
         if(typeof serverStatus !== "boolean") {
             logError("serverStatus must have a value of type 'boolean'");
@@ -413,7 +529,11 @@ function THM_OrderingQuestion (plugin, configuration) {
         this.serverStatus = serverStatus;
     };
 
-	// Return the boolean flag of if the server has responded
+	/**
+	Gets if the scene status has been recieved by the server
+	@param  {void} Nothing
+	@return {boolean} True if this scenes status has been recieved by the server and false otherwise
+	*/
     this.getServerStatus = function() { return this.serverStatus; };
-};
+}
 THM_OrderingQuestion.prototype = new Osmosis();

@@ -1,5 +1,11 @@
-//------------------------------------------------------------------------------
-// Socket Item data structure
+/**
+Socket Item data structure
+@class THM_Socket
+@param  {number} x The x position of the center of the socket.
+@param  {number} y The y position of the center of the socket.
+@param  {object} objAnswer The the object that should be in the socket for the answer to be correct.
+@return {void} Nothing
+*/
 function THM_Socket(x, y, objAnswer) {
 	// Local socket varibles
 	this.pntCenter = new Point(x,y);
@@ -7,8 +13,16 @@ function THM_Socket(x, y, objAnswer) {
 	this.objItem = null;
 }
 
-//------------------------------------------------------------------------------
-// Socket List the list of all the socket items
+/**
+Socket List the list of all the socket items
+@class THM_Sockets
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The parent layer to add these objects too.
+@param  {object} jObject The socket JSON defination.
+@param  {object} stack Reference to the object stack.
+@param  {number} maxDist The maximum distance that an object will snap to a socket in pixels.
+@return {void} Nothing
+*/
 function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 	// Local socket list varibles
 	this.plugin = plugin;
@@ -18,7 +32,11 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 	this.stack = stack;
 	this.maxDistance = maxDist * maxDist;
 
-	// Create the socket list based on the socket JSON
+	/**
+	Creates the socket list based on the socket JSON. Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		// Temporary location varibles
 		var socketX = 0;
@@ -61,14 +79,22 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 		}
 	};
 
-	// Reset of the sockets to be empty
+	/**
+	Resets all the sockets to be empty.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.reset = function() {
 		for(var i = 0; i < this.arrSocket.length; i++) {
 			this.arrSocket[i].objItem = null;
 		}
 	};
 
-	// Go through the sockut list and unsocket any item that matches
+	/**
+	Go through the socket list and unsocket any item that matches.
+	@param  {object} objItem Unsocket this item if socketed in the list.
+	@return {void} Nothing
+	*/
 	this.unsocket = function(objItem) {
 		for(var i = 0; i < this.arrSocket.length; i++) {
 			if(this.arrSocket[i].objItem === objItem) {
@@ -77,7 +103,11 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 		}
 	};
 
-	// Setup any show answer animations required
+	/**
+	Setup any show answer animations required.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showAnimation = function() {
 		var newX;
 		var newY;
@@ -99,7 +129,11 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 		}
 	};
 
-	// Check if all the objects are in the correct location
+	/**
+	Setup any show answer animations required.
+	@param  {void} Nothing
+	@return {boolean} True if every socket has the correct object in it and false otherwise.
+	*/
 	this.check = function() {
 		// Setup boolean flag
 		var bResult = true;
@@ -118,7 +152,11 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 		return bResult;
 	};
 
-	// Find the closest empty socket to the passed object
+	/**
+	Find the closest empty socket to the passed object.
+	@param  {object} objItem Find the socket closest to this socket.
+	@return {number} Returns -1 for no sockets within the maxDist and or return the index number of the socket availible.
+	*/
 	this.findClosest = function(objItem) {
 		// Local positioning variables
 		var xTemp = 0;
@@ -154,8 +192,15 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 	this.create();
 }
 
-//------------------------------------------------------------------------------
-// Create a stack of objects
+/**
+Creates a stack of objects.
+@class THM_Stack
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The parent layer to add these objects too.
+@param  {object} jStack The stacks JSON definetion.
+@param  {object} position Rectangle defination of the question layout.
+@return {void} Nothing
+*/
 function THM_Stack(plugin, lyrParent, jStack, position) {
 	this.plugin = plugin;
 	this.lyrParent = lyrParent;
@@ -176,7 +221,11 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 	this.funcDrag = undefined;
 	this.funcScope = undefined;
 
-	// Setup the item and add it to the passed parent
+	/**
+	Creates the stack and adds it to the passed parent. Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 
 		// Local temporary varibles for randomization
@@ -240,14 +289,23 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 		}
 	};
 
-	// The callback from an item that's its being dragged
+	/**
+	The callback from an object that's its being dragged
+	@param  {number} numObject The index of the object clicked on.
+	@param  {number} bDragging True if the mouse is down and false otherwise.
+	@return {void} Nothing
+	*/
 	this.isDragging = function(numItem, bDragging) {
 		if(this.funcDrag !== undefined && this.funcScope !== undefined) {
 			this.funcDrag.apply(this.funcScope, arguments);
 		}
 	};
 
-	// Get the name of an object in the stack and return the object
+	/**
+	Get the name of an object in the stack and return the object
+	@param  {string} name The name of the object we're looking for.
+	@return {object} Returns the object reference if found and undefined otherwise.
+	*/
 	this.getName = function(name) {
 		for(var i = 0; i < this.arrStack.length; i++) {
 			// If the passed name matches a stack item then return the pointer
@@ -260,7 +318,13 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 		return undefined;
 	};
 
-	// Snap the passed item number to the passed location
+	/**
+	Snap the passed item number to the passed location.
+	@param  {number} numItem The object index to snap.
+	@param  {number} x The x position to the snap the object to.
+	@param  {number} y The y position to the snap the object to.
+	@return {void} Nothing
+	*/
 	this.snap = function(numItem, x, y) {
 		this.arrStack[numItem].x = x;
 		this.arrStack[numItem].y = y;
@@ -269,14 +333,22 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 		this.enable();
 	};
 
-	// Set the passed item to tween by to it's origin
+	/**
+	Set the passed item to tween by to it's origin in the stack.
+	@param  {number} numItem The object index to tween back to stack.
+	@return {void} Nothing
+	*/
 	this.origin = function(numItem) {
 		this.arrStack[numItem].addTween("x:"+this.arrStack[numItem].originX+",y:"+this.arrStack[numItem].originY+",time:1");
 		this.arrStack[numItem].inStack = true;
 		this.enable();
 	};
 
-	// Snap all the stack object back to the stack
+	/**
+	Snap all the stack object back to the stack.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.reset = function() {
 		this.index = this.arrStack.length - 1;
 		for(var i = 0; i < this.arrStack.length; i++) {
@@ -286,7 +358,11 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 		this.enable();
 	};
 
-	// Enable only the top of the stack or any objects outside of the stack
+	/**
+	Enable only the top of the stack or any objects outside of the stack.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.enable = function() {
 		var last = this.arrStack[0];
 		for(var i = 0; i < this.arrStack.length; i++) {
@@ -303,7 +379,11 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 		last.subscribe();
 	};
 
-	// Unsubscribe everything
+	/**
+	Unsubscribe everything
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.disable = function() {
 		for(var i = 0; i < this.arrStack.length; i++) {
 			this.arrStack[i].unsubscribe();
@@ -313,8 +393,13 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 	this.create();
 }
 
-//------------------------------------------------------------------------------
-// The placement style question built by JSON
+/**
+The placement style question built by JSON
+@class THM_PlacementQuestion
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} configuration The JSON definetion of this question.
+@return {void} Nothing
+*/
 function THM_PlacementQuestion (plugin, configuration) {
 	DEBUG_MODE = true;
 
@@ -364,7 +449,12 @@ function THM_PlacementQuestion (plugin, configuration) {
 	this.stack = null;
 	this.sockets = null;
 
-	// The local call back for dragging the objects
+	/**
+	The local call back for dragging the objects.
+	@param  {number} numItem The index of the object clicked on.
+	@param  {number} bDragging True if the mouse is down and false otherwise.
+	@return {void} Nothing
+	*/
 	this.objDrag = function(numItem, bDragging) {
 		// Local temporary varibles
 		var numResult = 0;
@@ -398,7 +488,11 @@ function THM_PlacementQuestion (plugin, configuration) {
 		}
 	};
 
-	// Set the initialize function for Placement Question
+	/**
+	Overload the initialize function for a placement question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.initQuiz = function() {
 		logDebug("Placement question initQuiz()");
 
@@ -421,7 +515,11 @@ function THM_PlacementQuestion (plugin, configuration) {
 		this.sockets = new THM_Sockets(this.plugin, this.bgSockets, this.jSockets, this.stack, this.maxDistance);
 	};
 
-	// Set the display function for Placement Question
+	/**
+	Overload the display function for a placement question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.loadQuiz = function() {
 		logDebug("Placement question loadQuiz()");
 
@@ -430,7 +528,11 @@ function THM_PlacementQuestion (plugin, configuration) {
 		this.sockets.reset();
 	};
 
-	// Set the clean up function for Placement Question
+	/**
+	Overload the clean up  function for a placement question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.cleanUp = function() {
 
 		logDebug("Placement question cleanUp()");
@@ -438,64 +540,107 @@ function THM_PlacementQuestion (plugin, configuration) {
 		this.stack.disable();
 	};
 
-	// Set the reset function for Placement Question
+	/**
+	Overload the reset function for a placement question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.resetQuiz = function() {
 		logDebug("Placement question resetQuiz()");
 		this.loadQuiz();
 	};
 
-	// Set the show correct answer function for Placement Question
+	/**
+	Overload the show correct answer function for a placement question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showCorrectAnswer = function() {
 		logDebug("Placement question showCorrectAnswer()");
 		this.sockets.showAnimation();
 	};
 
-	// Set the check answer function for Placement Question
+	/**
+	Overload the check answer function for a placement question.
+	@param  {void} Nothing
+	@return {boolean} True if correct and false otherwise.
+	*/
 	this.checkAnswer = function() {
 		logDebug("Placement question checkAnswer()");
 		return this.sockets.check();
 	};
 
-	// Plugin call to add the scene
-	this.addScene = function() {
+	/**
+	Adds this scene to the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
+    this.addScene = function() {
         this.plugin.addScene(this.id);
     };
 
-	// Plugin call to move to the next scene
+	/**
+	Changes to the next scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.nextScene = function() {
         this.plugin.nextScene();
     };
 
-	// Plugin call to move to the previous scene
+	/**
+	Changes to the previous scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.prevScene = function() {
         this.plugin.prevScene();
     };
 
-	// Plugin call to move to the set the scene
+	/**
+	Sets the current scene to this one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.setScene = function() {
         this.plugin.setScene(this.getId());
     };
 
-	// Set the number of tries for the question
+	/**
+	Sets the number of tries for this scene.
+	@param  {number} tries The number of tries for this scene
+	@return {void} Nothing
+	*/
     this.setTries = function(tries) {
         if(typeof tries !== "number") {
-            logError("tries must have a value of type 'number'");
             return;
         }
         this.tries = tries;
     };
 
-	// Decrement the number of tries by one
+	/**
+	Decrements the number of tries by one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.decrementTries = function() {
         if(!(this.tries === 0)) {
             this.tries = this.tries - 1;
         }
     };
 
-	// Return the number of tries
+	/**
+	Gets the number of tries for this scene.
+	@param  {void} Nothing
+	@return {number} The number of tries for this scene
+	*/
     this.getTries = function() { return this.tries; };
 
-	// Set the boolean flag of if the question is correct
+	/**
+	Sets if the scene is correct
+	@param  {boolean} correct True if this scene is correct and false otherwise
+	@return {void} Nothing
+	*/
     this.setCorrect = function(correct) {
         if(typeof correct !== "boolean") {
             logError("correct must have a value of type 'boolean'");
@@ -505,10 +650,18 @@ function THM_PlacementQuestion (plugin, configuration) {
         this.completed = true;
     };
 
-	// Return the boolean flag of if the question is correct
+	/**
+	Gets if the scene is correct
+	@param  {void} Nothing
+	@return {boolean} True if this scene is correct and false otherwise
+	*/
     this.getCorrect = function() { return this.correct; };
 
-	// Set the boolean flag of if the question is complete
+	/**
+	Sets if the scene is completed
+	@param  {boolean} completed True if this scene is completed and false otherwise
+	@return {void} Nothing
+	*/
     this.setCompleted = function(completed) {
         if(typeof completed !== "boolean") {
             logError("completed must have a value of type 'boolean'");
@@ -517,10 +670,18 @@ function THM_PlacementQuestion (plugin, configuration) {
         this.completed = completed;
     };
 
-	// Return the boolean flag of if the question is complete
+	/**
+	Gets if the scene is completed
+	@param  {void} Nothing
+	@return {boolean} True if this scene is completed and false otherwise
+	*/
     this.getCompleted = function() { return this.completed; };
 
-	// Set the boolean flag of if the server has responded
+	/**
+	Sets if the scene status has been recieved by the server
+	@param  {boolean} serverStatus True if this scenes status has been recieved by the server and false otherwise
+	@return {void} Nothing
+	*/
     this.setServerStatus = function(serverStatus) {
         if(typeof serverStatus !== "boolean") {
             logError("serverStatus must have a value of type 'boolean'");
@@ -529,7 +690,11 @@ function THM_PlacementQuestion (plugin, configuration) {
         this.serverStatus = serverStatus;
     };
 
-	// Return the boolean flag of if the server has responded
+	/**
+	Gets if the scene status has been recieved by the server
+	@param  {void} Nothing
+	@return {boolean} True if this scenes status has been recieved by the server and false otherwise
+	*/
     this.getServerStatus = function() { return this.serverStatus; };
-};
+}
 THM_PlacementQuestion.prototype = new Osmosis();

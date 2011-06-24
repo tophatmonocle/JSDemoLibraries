@@ -1,7 +1,11 @@
 var fastMath;
-
-//------------------------------------------------------------------------------
-// A generic object with a background rectangle and label
+/**
+Creates an arrow from a define start point to the end point.  The end point always has an arrow head.
+@class THM_Arrow
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The layer to add the arrow to.
+@return {void} Nothing
+*/
 function THM_Arrow(plugin, lyrParent) {
 	// Setup local varibles
     this.plugin = plugin;
@@ -27,7 +31,11 @@ function THM_Arrow(plugin, lyrParent) {
 		fastMath = new THM_fastMath();
 	}
 
-	// Setup the item and add it to the passed parent
+	/**
+	Setup the arrow and add it to the passed parent.  Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		// Create the 3 lines for the arrow
 		this.lineMain = new Line(this.plugin, 0, 0, 0, 0);
@@ -40,47 +48,80 @@ function THM_Arrow(plugin, lyrParent) {
 		this.lyrParent.addChild(this.lineLeft);
 	};
 
-	// Set the start point of the arrow and redraw the arrow
+	/**
+	Set the start point of the arrow and redraw the arrow.
+	@param  {number} x The new x position of the start point for the arrow.
+	@param  {number} y The new y position of the start point for the arrow.
+	@return {void} Nothing
+	*/
 	this.setStart = function(x,y) {
 		this.pntStart.x = x;
 		this.pntStart.y = y;
 		this.drawArrow();
 	};
 
-	// Set the end point of the arrow and redraw the arrow
+	/**
+	Set the end point of the arrow and redraw the arrow.
+	@param  {number} x The new x position of the end point for the arrow.
+	@param  {number} y The new y position of the end point for the arrow.
+	@return {void} Nothing
+	*/
 	this.setEnd = function(x,y) {
 		this.pntEnd.x = x;
 		this.pntEnd.y = y;
 		this.drawArrow();
 	};
 
-	// Set the thickness of each of the lines
+	/**
+	Set the thickness of each of the lines.
+	@param  {number} thickness The new thickness of all the lines used to create the arrow.
+	@return {void} Nothing
+	*/
 	this.setThickness = function(thickness) {
 		this.lineMain.setThickness(thickness);
 		this.lineRight.setThickness(thickness);
 		this.lineLeft.setThickness(thickness);
 	};
 
-	// Set the color of each of the lines
+	/**
+	Set the color of each of the lines.
+	@param  {number} r The new amount of red in the lines (range 0 to 1).
+	@param  {number} g The new amount of green in the lines (range 0 to 1).
+	@param  {number} b The new amount of blue in the lines (range 0 to 1).
+	@param  {number} a The new amount of alpha in the lines (range 0 to 1).
+	@return {void} Nothing
+	*/
 	this.setColor = function(r,g,b,a) {
 		this.lineMain.setColor(r,g,b,a);
 		this.lineRight.setColor(r,g,b,a);
 		this.lineLeft.setColor(r,g,b,a);
 	};
 
-	// Set the length of the both arrow legs and redraw the arrow
+	/**
+	Set the length of the both arrow legs and redraw the arrow.
+	@param  {number} length The new length of the arrow head legs in pixels.
+	@return {void} Nothing
+	*/
 	this.setLegLength = function(length) {
 		this.numLegLength = length;
 		this.drawArrow();
 	};
 
-	// Set the angle of the both arrow legs and redraw the arrow
+	/**
+	Set the angle of the both arrow legs and redraw the arrow.
+	@param  {number} angle The new angle of the arrow head legs in degrees.
+	@return {void} Nothing
+	*/
 	this.setLegAngle = function(angle) {
 		this.numLegAngle = angle;
 		this.drawArrow();
 	};
 
-	// Draw the arrow based on the start and end point
+	/**
+	Draw the arrow based on the start and end point.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.drawArrow = function() {
 		// Figure out the vector of the arrow
 		this.vecMain.radial = distancePoints(this.pntStart, this.pntEnd);
@@ -118,7 +159,13 @@ function THM_Arrow(plugin, lyrParent) {
 }
 THM_Object.prototype = new Osmosis();
 
-// Figure out the arc tan of two points in degrees without using the slow Math librarys
+/**
+Figure out the arc tan of two points in degrees without using the slow Math librarys.
+@class piecewiseArcTan
+@param  {object} pointA The frist point to get the arc tan of.
+@param  {object} pointB The second point to get the arc tan of.
+@return {number} The angle of the two points passed in.
+*/
 function piecewiseArcTan(pointA, pointB) {
 	// Figure out the x and y deltas
 	var dx = pointA.x - pointB.x;
@@ -180,8 +227,14 @@ function piecewiseArcTan(pointA, pointB) {
 }
 
 var mediaURL, slugUUID;
-//------------------------------------------------------------------------------
-// Preamble & initialization
+/**
+Build a demo from the passed in demo configuration.
+@class buildDemo
+@param  {object} plugin The monocleGL plugin object.
+@param  {string} media The URL location of the images resources.
+@param  {object} demoJSON The demo JSON configuration to build the demo off of.
+@return {void} Nothing
+*/
 function buildDemo(plugin, media, demoJSON) {
 	// Read the mediaURL and slugUUID from JSON
 	mediaURL = readJSON(demoJSON.mediaURL, "media url", media);
@@ -233,8 +286,15 @@ function buildDemo(plugin, media, demoJSON) {
 	// Start the demo already
 	thmDemo.begin();
 }
-window.buildDemo = buildDemo;//------------------------------------------------------------------------------
-// The target element built by JSON
+window.buildDemo = buildDemo;/**
+The target element built by JSON.
+@class THM_Target
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The layer to add the target to.
+@param  {number} numTarget The number of the target, this value will be returned from a callback.
+@param  {object} jTarget The JSON configuration for this target.
+@return {void} Nothing
+*/
 function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 	this.plugin = plugin;
 	this.lyrParent = lyrParent;
@@ -244,7 +304,11 @@ function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 	this.funcScope = undefined;
 	this.bHit = false;
 
-	// Create the Target
+	/**
+	Setup the target and add it to the passed parent.  Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		// Read the x,y location the width and height of the target
 		this.x = parseInt(readJSON(this.jTarget.x, "target x","0"),10);
@@ -292,25 +356,42 @@ function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 		this.lyrParent.addChild(this.lyrBG);
 	};
 
-	// The target is clicked callback function
+	/**
+	The callback that gets triggered whenever user clicks on the target.
+	@param  {number} x The x position of the mouse.
+	@param  {number} y The y position of the mouse.
+	@return {void} Nothing
+	*/
 	this.targetClick = function(x,y) {
 		this.isClicked(this.numTarget);
 	};
 
-	// This callback notifies the demo when a target is clicked
+	/**
+	This callback notifies the demo when a target is clicked.
+	@param  {number} numObject The value to passed along to the demo.
+	@return {void} Nothing
+	*/
 	this.isClicked = function(numObject) {
 		if(this.funcClick !== undefined && this.funcScope !== undefined) {
 			this.funcClick.apply(this.funcScope, arguments);
 		}
 	};
 
-	// Subscribe the target and show the enabled sprite
+	/**
+	Subscribe the target and show the enabled sprite.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.enable = function() {
 		this.clear();
 		this.sprEnabled.subscribe();
 	};
 
-	// Unsubscribe the target and show the disabled sprite
+	/**
+	Unsubscribe the target and show the disabled sprite.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.disable = function() {
 		this.sprEnabled.setVisibility(false);
 		this.sprHit.setVisibility(false);
@@ -318,7 +399,11 @@ function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 		this.sprEnabled.unsubscribe();
 	};
 
-	// Show the hit sprite and set the hit boolean
+	/**
+	Show the hit sprite and set the hit boolean.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.hit = function() {
 		this.sprEnabled.setVisibility(false);
 		this.sprDisabled.setVisibility(false);
@@ -326,7 +411,11 @@ function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 		this.bHit = true;
 	};
 
-	// Show the enabled sprite and clear the hit boolean
+	/**
+	Show the enabled sprite and clear the hit boolean.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.clear = function() {
 		this.sprDisabled.setVisibility(false);
 		this.sprHit.setVisibility(false);
@@ -334,7 +423,11 @@ function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 		this.bHit = false;
 	};
 
-	// Toggle inbetween the hit and enabled sprites
+	/**
+	Toggle inbetween the hit and enabled sprites.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.toggle = function() {
 		if(this.bHit) {
 			this.clear();
@@ -343,7 +436,11 @@ function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 		}
 	};
 
-	// Show the answer for the this target
+	/**
+	Show the answer for the this target.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showAnswer = function() {
 		if(this.correct) {
 			this.hit();
@@ -352,7 +449,11 @@ function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 		}
 	};
 
-	// Check if the hit boolean matchs JSON correct answer
+	/**
+	Check if the hit boolean matchs JSON correct answer.
+	@param  {void} Nothing
+	@return {boolean} True if this target is set corectly and false otherwise.
+	*/
 	this.check = function() {
 		return this.correct === this.bHit;
 	};
@@ -361,8 +462,14 @@ function THM_Target (plugin, lyrParent, numTarget, jTarget) {
 }
 THM_Target.prototype = new Osmosis();
 
-//------------------------------------------------------------------------------
-// The target map style question built by JSON
+/**
+The target map style question built by JSON
+@class THM_ClickOnTargetQuestion
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} configuration The JSON configuration for this question.
+@param  {object} thmDemo The refernce to the THM_Template object for inheritence.
+@return {void} Nothing
+*/
 function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
 	// Scene specfic values
 	this.plugin = plugin;
@@ -388,7 +495,11 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
     this.currentTargets = [];
     this.last = -1;
 
-    // The callback from an item that's its being dragged
+	/**
+	This callback notifies the demo when a target is clicked.
+	@param  {number} numTarget The value to passed along to the demo.
+	@return {void} Nothing
+	*/
 	this.isClicked = function(numTarget) {
 		// If single answer mode is on and the last number is valid then clear that target
 		if(this.last !== -1 && this.last !== numTarget && !this.multipleAnswers) {
@@ -402,7 +513,11 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
 		this.last = numTarget;
 	};
 
-	// Set the initialize function for a target map question
+	/**
+	Overload the initialize function for a target map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.initQuiz = function() {
 		logDebug("Click on target map question initQuiz()");
 		var i = 0;
@@ -523,7 +638,12 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
 		this.bgLayer.addChild(rectInstruction);
 	};
 
-	// Set the display function for a target map question
+
+	/**
+	Overload the display function for a target map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.loadQuiz = function() {
 		logDebug("Click on target question loadQuiz()");
 
@@ -553,20 +673,32 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
 		this.last = -1;
 	};
 
-	// Set the clean up function for a target map question
+	/**
+	Overload the clean up function for a target map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.cleanUp = function() {
 		logDebug("Click on target question cleanUp()");
 		// Resize the image to it's original size and unsubscribe it
 		this.lyrDrag.unsubscribe();
 	};
 
-	// Set the reset function for a target map question
+	/**
+	Overload the reset function for a target map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.resetQuiz = function() {
 		logDebug("Click on target question resetQuiz()");
 		this.loadQuiz();
 	};
 
-	// Set the show correct answer function for a target map question
+	/**
+	Overload the show correct answer function for a target map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showCorrectAnswer = function() {
 		logDebug("Click on target question showCorrectAnswer()");
 		// Show the answer for all the targets for this question
@@ -575,7 +707,11 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
 		}
 	};
 
-	// Set the check answer function for a target map question
+	/**
+	Overload the check answer function for a target map question.
+	@param  {void} Nothing
+	@return {boolean} True if the question is correct and false otherwise.
+	*/
 	this.checkAnswer = function() {
 		logDebug("Click on target question checkAnswer()");
 		var bResult = true;
@@ -586,46 +722,77 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
 		return bResult;
 	};
 
-	// Plugin call to add the scene
-	this.addScene = function() {
+	/**
+	Adds this scene to the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
+    this.addScene = function() {
         this.plugin.addScene(this.id);
     };
 
-	// Plugin call to move to the next scene
+	/**
+	Changes to the next scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.nextScene = function() {
         this.plugin.nextScene();
     };
 
-	// Plugin call to move to the previous scene
+	/**
+	Changes to the previous scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.prevScene = function() {
         this.plugin.prevScene();
     };
 
-	// Plugin call to move to the set the scene
+	/**
+	Sets the current scene to this one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.setScene = function() {
         this.plugin.setScene(this.getId());
     };
 
-	// Set the number of tries for the question
+	/**
+	Sets the number of tries for this scene.
+	@param  {number} tries The number of tries for this scene
+	@return {void} Nothing
+	*/
     this.setTries = function(tries) {
         if(typeof tries !== "number") {
-            logError("tries must have a value of type 'number'");
             return;
         }
         this.tries = tries;
     };
 
-	// Decrement the number of tries by one
+	/**
+	Decrements the number of tries by one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.decrementTries = function() {
         if(!(this.tries === 0)) {
             this.tries = this.tries - 1;
         }
     };
 
-	// Return the number of tries
+	/**
+	Gets the number of tries for this scene.
+	@param  {void} Nothing
+	@return {number} The number of tries for this scene
+	*/
     this.getTries = function() { return this.tries; };
 
-	// Set the boolean flag of if the question is correct
+	/**
+	Sets if the scene is correct
+	@param  {boolean} correct True if this scene is correct and false otherwise
+	@return {void} Nothing
+	*/
     this.setCorrect = function(correct) {
         if(typeof correct !== "boolean") {
             logError("correct must have a value of type 'boolean'");
@@ -635,10 +802,18 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
         this.completed = true;
     };
 
-	// Return the boolean flag of if the question is correct
+	/**
+	Gets if the scene is correct
+	@param  {void} Nothing
+	@return {boolean} True if this scene is correct and false otherwise
+	*/
     this.getCorrect = function() { return this.correct; };
 
-	// Set the boolean flag of if the question is complete
+	/**
+	Sets if the scene is completed
+	@param  {boolean} completed True if this scene is completed and false otherwise
+	@return {void} Nothing
+	*/
     this.setCompleted = function(completed) {
         if(typeof completed !== "boolean") {
             logError("completed must have a value of type 'boolean'");
@@ -647,10 +822,18 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
         this.completed = completed;
     };
 
-	// Return the boolean flag of if the question is complete
+	/**
+	Gets if the scene is completed
+	@param  {void} Nothing
+	@return {boolean} True if this scene is completed and false otherwise
+	*/
     this.getCompleted = function() { return this.completed; };
 
-	// Set the boolean flag of if the server has responded
+	/**
+	Sets if the scene status has been recieved by the server
+	@param  {boolean} serverStatus True if this scenes status has been recieved by the server and false otherwise
+	@return {void} Nothing
+	*/
     this.setServerStatus = function(serverStatus) {
         if(typeof serverStatus !== "boolean") {
             logError("serverStatus must have a value of type 'boolean'");
@@ -659,12 +842,23 @@ function THM_ClickOnTargetQuestion (plugin, configuration, thmDemo) {
         this.serverStatus = serverStatus;
     };
 
-	// Return the boolean flag of if the server has responded
+	/**
+	Gets if the scene status has been recieved by the server
+	@param  {void} Nothing
+	@return {boolean} True if this scenes status has been recieved by the server and false otherwise
+	*/
     this.getServerStatus = function() { return this.serverStatus; };
-};
+}
 THM_ClickOnTargetQuestion.prototype = new Osmosis();
-//------------------------------------------------------------------------------
-// Color storage and conversion object
+/**
+Color storage and conversion object.
+@class THM_Color
+@param  {number} r The new amount of red (range 0 to 1).
+@param  {number} g The new amount of green (range 0 to 1).
+@param  {number} b The new amount of blue (range 0 to 1).
+@param  {number} a The new amount of alpha (range 0 to 1).
+@return {void} Nothing
+*/
 function THM_Color(r, g, b, a) {
 
 	if(r === undefined) { this.r = 0; } else { this.r = r; }
@@ -672,10 +866,14 @@ function THM_Color(r, g, b, a) {
 	if(b === undefined) { this.b = 0; } else { this.b = b; }
 	if(a === undefined) { this.a = 0; } else { this.a = a; }
 
-	// Convert a hexdecimal string to openGL color ranges 
+	/**
+	Convert a hexdecimal string to openGL color ranges
+	@param  {string} strHex A 6 charactor string for 24 bit color or a 8 charactor string for 32 bit color
+	@return {void} Nothing
+	*/
 	this.convertHex = function(strHex) {
 		var numHex = parseInt(strHex, 16);
-		
+
 		// Check if the color is 24 or 32 bit
 		if(strHex.length === 8) {
 			this.r = ((numHex >> 24) & 0xFF) / 0xFF;
@@ -690,7 +888,14 @@ function THM_Color(r, g, b, a) {
 		}
 	};
 
-	// Convert from standard color range (0-255) to openGL color range (0-1)
+	/**
+	Convert from standard color range (0-255) to openGL color range (0-1)
+	@param  {number} newR The new amount of red (range 0 to 255).
+	@param  {number} newG The new amount of green (range 0 to 255).
+	@param  {number} newB The new amount of blue (range 0 to 255).
+	@param  {number} newA The new amount of alpha (range 0 to 255).
+	@return {void} Nothing
+	*/
 	this.convertRGBA = function(newR, newG, newB, newA) {
 		this.r = newR / 0xFF;
 		this.g = newG / 0xFF;
@@ -698,7 +903,14 @@ function THM_Color(r, g, b, a) {
 		this.a = newA / 0xFF;
 	};
 
-	// No conversion just a direct copy
+	/**
+	No conversion just a direct copy.
+	@param  {number} newR The new amount of red (range 0 to 1).
+	@param  {number} newG The new amount of green (range 0 to 1).
+	@param  {number} newB The new amount of blue (range 0 to 1).
+	@param  {number} newA The new amount of alpha (range 0 to 1).
+	@return {void} Nothing
+	*/
 	this.setColor = function(newR, newG, newB, newA) {
 		this.r = newR;
 		this.g = newG;
@@ -706,14 +918,24 @@ function THM_Color(r, g, b, a) {
 		this.a = newA;
 	};
 }
-//------------------------------------------------------------------------------
-// The concept element built by JSON
+/**
+The relationship element built by JSON
+@class THM_Relationship
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The layer to add the relationship to.
+@param  {object} jRelationship The JSON configuration for this relationship.
+@return {void} Nothing
+*/
 function THM_Relationship (plugin, lyrParent, jRelationship) {
 	this.plugin = plugin;
 	this.lyrParent = lyrParent;
 	this.jRelationship = jRelationship;
 
-	// Create the relationship
+	/**
+	Setup the relationship and add it to the passed parent.  Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		// Read the relationship details from JSON
 		this.x = parseInt(readJSON(this.jRelationship.x, "relationship x","0"), 10);
@@ -766,7 +988,11 @@ function THM_Relationship (plugin, lyrParent, jRelationship) {
 		this.lyrParent.addChild(this.lyrBG)
 	};
 
-	// Subscribe the drop down and clear the color overlay
+	/**
+	Subscribe the drop down and clear the color overlay.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.enable = function() {
 		// Subscribe and reset drop down
 		this.dd.subscribe();
@@ -781,7 +1007,11 @@ function THM_Relationship (plugin, lyrParent, jRelationship) {
 		this.lyrColor.addTween("red:0,green:0,blue:0,alpha:0,time:1");
 	};
 
-	// Unsubscribe the drop down and set a grey color overlay
+	/**
+	Unsubscribe the drop down and set a grey color overlay.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.disable = function() {
 		// Unsubscribe and reset drop down
 		this.dd.unsubscribe();
@@ -792,7 +1022,11 @@ function THM_Relationship (plugin, lyrParent, jRelationship) {
 		this.lyrColor.addTween("red:0,green:0,blue:0,alpha:0.33,time:1");
 	};
 
-	// Unsubscribe the drop down and set a green color overlay
+	/**
+	Unsubscribe the drop down and set a green color overlay.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showAnswer = function() {
 		// Unsubscribe and set drop down to show the answer
 		this.dd.unsubscribe();
@@ -803,7 +1037,11 @@ function THM_Relationship (plugin, lyrParent, jRelationship) {
 		this.lyrColor.addTween("red:0.5,green:1.0,blue:0.45,alpha:0.33,time:1");
 	};
 
-	// Check if the drop down is correct and animate the color overlay
+	/**
+	Check if the drop down is correct and animate the color overlay.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.check = function() {
 		var bResult = this.dd.getText() === this.strAnswer;
 
@@ -825,15 +1063,25 @@ function THM_Relationship (plugin, lyrParent, jRelationship) {
 }
 THM_Relationship.prototype = new Osmosis();
 
-//------------------------------------------------------------------------------
-// The background layer with all the concepts and relationships on it for dragging
+/**
+The background layer with all the concepts and relationships on it for dragging
+@class THM_ConceptMap
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The layer to add the concepts to.
+@param  {object} jConcepts The JSON configuration for this concepts.
+@return {void} Nothing
+*/
 function THM_ConceptMap (plugin, parentLayer, jConcepts) {
 	this.plugin = plugin;
 	this.parentLayer = parentLayer;
 	this.jConcepts = jConcepts;
 	this.concepts = [];
 
-	// Create the concept map based on the JSON definations
+	/**
+	Create the concept map based on the JSON definations.  Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		var i;
 
@@ -873,8 +1121,14 @@ function THM_ConceptMap (plugin, parentLayer, jConcepts) {
 }
 THM_ConceptMap.prototype = new Osmosis();
 
-//------------------------------------------------------------------------------
-// The concept map style question built by JSON
+/**
+The concept map style question built by JSON
+@class THM_ConceptMapQuestion
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} configuration The JSON configuration for this question.
+@param  {object} thmDemo The refernce to the THM_Template object for inheritence.
+@return {void} Nothing
+*/
 function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
 
 	// Scene specfic values
@@ -900,7 +1154,11 @@ function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
     this.allRelationships = [];
     this.currentRelationships = [];
 
-	// Set the initialize function for a concept map question
+	/**
+	Overload the initialize function for a concept map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.initQuiz = function() {
 		logDebug("Concept map question initQuiz()");
 
@@ -975,7 +1233,11 @@ function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
 		this.bgLayer.addChild(rectInstruction);
 	};
 
-	// Set the display function for a concept map question
+	/**
+	Overload the display function for a concept map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.loadQuiz = function() {
 		logDebug("Concept map question loadQuiz()");
 
@@ -999,19 +1261,31 @@ function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
 		}
 	};
 
-	// Set the clean up function for a concept map question
+	/**
+	Overload the clean up function for a concept map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.cleanUp = function() {
 		logDebug("Concept map question cleanUp()");
 		this.cMap.unsubscribe();
 	};
 
-	// Set the reset function for a concept map question
+	/**
+	Overload the reset function for a concept map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.resetQuiz = function() {
 		logDebug("Concept map question resetQuiz()");
 		this.loadQuiz();
 	};
 
-	// Set the show correct answer function for a concept map question
+	/**
+	Overload the show correct answer function for a concept map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showCorrectAnswer = function() {
 		logDebug("Concept map question showCorrectAnswer()");
 		// Show the answer for all the labels for this question
@@ -1020,7 +1294,11 @@ function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
 		}
 	};
 
-	// Set the check answer function for a concept map question
+	/**
+	Overload the check answer function for a concept map question.
+	@param  {void} Nothing
+	@return {boolean} True if the question is correct and false otherwise.
+	*/
 	this.checkAnswer = function() {
 		logDebug("Concept map question checkAnswer()");
 		var bResult = true;
@@ -1031,46 +1309,77 @@ function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
 		return bResult;
 	};
 
-	// Plugin call to add the scene
-	this.addScene = function() {
+	/**
+	Adds this scene to the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
+    this.addScene = function() {
         this.plugin.addScene(this.id);
     };
 
-	// Plugin call to move to the next scene
+	/**
+	Changes to the next scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.nextScene = function() {
         this.plugin.nextScene();
     };
 
-	// Plugin call to move to the previous scene
+	/**
+	Changes to the previous scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.prevScene = function() {
         this.plugin.prevScene();
     };
 
-	// Plugin call to move to the set the scene
+	/**
+	Sets the current scene to this one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.setScene = function() {
         this.plugin.setScene(this.getId());
     };
 
-	// Set the number of tries for the question
+	/**
+	Sets the number of tries for this scene.
+	@param  {number} tries The number of tries for this scene
+	@return {void} Nothing
+	*/
     this.setTries = function(tries) {
         if(typeof tries !== "number") {
-            logError("tries must have a value of type 'number'");
             return;
         }
         this.tries = tries;
     };
 
-	// Decrement the number of tries by one
+	/**
+	Decrements the number of tries by one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.decrementTries = function() {
         if(!(this.tries === 0)) {
             this.tries = this.tries - 1;
         }
     };
 
-	// Return the number of tries
+	/**
+	Gets the number of tries for this scene.
+	@param  {void} Nothing
+	@return {number} The number of tries for this scene
+	*/
     this.getTries = function() { return this.tries; };
 
-	// Set the boolean flag of if the question is correct
+	/**
+	Sets if the scene is correct
+	@param  {boolean} correct True if this scene is correct and false otherwise
+	@return {void} Nothing
+	*/
     this.setCorrect = function(correct) {
         if(typeof correct !== "boolean") {
             logError("correct must have a value of type 'boolean'");
@@ -1080,10 +1389,18 @@ function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
         this.completed = true;
     };
 
-	// Return the boolean flag of if the question is correct
+	/**
+	Gets if the scene is correct
+	@param  {void} Nothing
+	@return {boolean} True if this scene is correct and false otherwise
+	*/
     this.getCorrect = function() { return this.correct; };
 
-	// Set the boolean flag of if the question is complete
+	/**
+	Sets if the scene is completed
+	@param  {boolean} completed True if this scene is completed and false otherwise
+	@return {void} Nothing
+	*/
     this.setCompleted = function(completed) {
         if(typeof completed !== "boolean") {
             logError("completed must have a value of type 'boolean'");
@@ -1092,10 +1409,18 @@ function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
         this.completed = completed;
     };
 
-	// Return the boolean flag of if the question is complete
+	/**
+	Gets if the scene is completed
+	@param  {void} Nothing
+	@return {boolean} True if this scene is completed and false otherwise
+	*/
     this.getCompleted = function() { return this.completed; };
 
-	// Set the boolean flag of if the server has responded
+	/**
+	Sets if the scene status has been recieved by the server
+	@param  {boolean} serverStatus True if this scenes status has been recieved by the server and false otherwise
+	@return {void} Nothing
+	*/
     this.setServerStatus = function(serverStatus) {
         if(typeof serverStatus !== "boolean") {
             logError("serverStatus must have a value of type 'boolean'");
@@ -1104,12 +1429,25 @@ function THM_ConceptMapQuestion (plugin, configuration, thmDemo) {
         this.serverStatus = serverStatus;
     };
 
-	// Return the boolean flag of if the server has responded
+	/**
+	Gets if the scene status has been recieved by the server
+	@param  {void} Nothing
+	@return {boolean} True if this scenes status has been recieved by the server and false otherwise
+	*/
     this.getServerStatus = function() { return this.serverStatus; };
-};
+}
 THM_ConceptMapQuestion.prototype = new Osmosis();
-//------------------------------------------------------------------------------
-// A custom button class
+/**
+A custom button class
+@class THM_CustomButton
+@param  {object} plugin The monocleGL plugin object.
+@param  {string} text The text to display in the button.
+@param  {number} x The x position of the button
+@param  {number} y The y position of the button
+@param  {number} width The width of the button
+@param  {number} height The height of the button
+@return {void} Nothing
+*/
 function THM_CustomButton(plugin, text, x, y, width, height){
 	this.plugin = plugin;
 	this.width = width;
@@ -1118,7 +1456,11 @@ function THM_CustomButton(plugin, text, x, y, width, height){
 	this.y = y;
 	this.text = text;
 
-	// Create the button
+	/**
+	Setup the custom button and add it to a single layer.  Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		// Define all the colors
 		this.borderCol = new THM_Color(0,0,0,1);
@@ -1152,46 +1494,89 @@ function THM_CustomButton(plugin, text, x, y, width, height){
 		this.layer.addChild(this.label);
 	};
 
-	// Set the border color
+	/**
+	Sets the buttons border color.
+	@param  {number} r The new amount of red (range 0 to 1).
+	@param  {number} g The new amount of green (range 0 to 1).
+	@param  {number} b The new amount of blue (range 0 to 1).
+	@param  {number} a The new amount of alpha (range 0 to 1).
+	@return {void} Nothing
+	*/
 	this.setBorderColor = function(r, g, b, a){
 		this.borderCol.setColor(r, g, b, a);
 		this.background.setBorderColor(r, g, b, a);
 	};
 
-	// Set the background color
+	/**
+	Sets the buttons background color.
+	@param  {number} r The new amount of red (range 0 to 1).
+	@param  {number} g The new amount of green (range 0 to 1).
+	@param  {number} b The new amount of blue (range 0 to 1).
+	@param  {number} a The new amount of alpha (range 0 to 1).
+	@return {void} Nothing
+	*/
 	this.setColor = function(r, g, b, a){
 		this.bgCol.setColor(r, g, b, a);
 		this.background.setColor(r, g, b, a);
 	};
 
-	// Set the text caption color
+	/**
+	Sets the buttons text caption color.
+	@param  {number} r The new amount of red (range 0 to 1).
+	@param  {number} g The new amount of green (range 0 to 1).
+	@param  {number} b The new amount of blue (range 0 to 1).
+	@param  {number} a The new amount of alpha (range 0 to 1).
+	@return {void} Nothing
+	*/
 	this.setCaptionColor = function(r, g, b, a){
 		this.textColor.setColor(r, g, b, a);
 		this.label.setCaptionColor(r, g, b, a);
 	};
 
-	// Set the up callback of the invisible sprite
+	/**
+	Add a callback to be triggered whenever the invisible sprite has the mouse click up on it.
+	@param  {object} obj The object for JavaScript to call the callback on.
+	@param  {string} func The name of the function to call when a callback occurs.
+	@return {void} Nothing
+	*/
 	this.upCallback = function(object, func){
 		this.inv.upCallback(object, func);
 	};
 
-	// Set the down callback of the invisible sprite
+	/**
+	Add a callback to be triggered whenever the invisible sprite has the mouse click down on it.
+	@param  {object} obj The object for JavaScript to call the callback on.
+	@param  {string} func The name of the function to call when a callback occurs.
+	@return {void} Nothing
+	*/
 	this.downCallback = function(object, func){
 		this.inv.downCallback(object, func);
 	};
 
-	// Set the text of the label
+	/**
+	Sets the string that will be displayed in the label.
+	@param  {string} text The string to be displayed inside label.
+	@return {void} Nothing
+	*/
 	this.setText = function(text){
 		this.text = text;
 		this.label.setText(this.text);
 	};
 
-	// Subscribe the invisible sprite
+	/**
+	Notifies the plugin that the invisible sprite wants to recieve events.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.subscribe = function(){
 		this.inv.subscribe();
 	};
 
-	// Unsubscribe the invisible sprite
+	/**
+	Notifies the plugin that the invisible sprite does NOT want to recieve events.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.unsubscribe = function(){
 		this.inv.unsubscribe();
 	};
@@ -1200,7 +1585,16 @@ function THM_CustomButton(plugin, text, x, y, width, height){
 }
 THM_CustomButton.prototype = new Osmosis();
 //------------------------------------------------------------------------------
-// Safely read JSON objects within a browser with out stopping on error
+//
+
+/**
+Safely read JSON objects within a browser with out stopping on error
+@class readJSON
+@param  {object} jObject The JSON variable we are trying to read.
+@param  {string} strType The text to display when jObject is undefined.
+@param  {object} objDefault The default variable to return when jObject is undefined.
+@return {object} Returns the value of jObject if defined or objDefault when jObject is undefined.
+*/
 function readJSON(jObject, strType, objDefault) {
 	var strError = "";
 	var rObject = null;
@@ -1214,7 +1608,7 @@ function readJSON(jObject, strType, objDefault) {
 
 	// Check if JSON object exists before reading it
 	if(jObject === undefined) {
-		logError("ERROR reading JSON " + strError);
+		logError("WARNING could not read JSON " + strError);
 		rObject = objDefault;
 	} else {
 		rObject = jObject;
@@ -1223,21 +1617,35 @@ function readJSON(jObject, strType, objDefault) {
 	// Return the JSON object value or an error message
 	return rObject;
 }
-//------------------------------------------------------------------------------
-// Little wrapper function used to test is the answer is a number
+/**
+Little wrapper function used to test is the answer is a number
+@class isNumber
+@param  {object} o The object to test if it's a number.
+@return {boolean} True if is a number and false otherwise.
+*/
 function isNumber (o) {
   return ! isNaN (o-0);
 }
 
-//------------------------------------------------------------------------------
-// The concept element built by JSON
+/**
+A custom button class
+@class THM_Label
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The parent layer to add this label to.
+@param  {object} jLabel The JSON definetion of the label.
+@return {void} Nothing
+*/
 function THM_Label (plugin, lyrParent, jLabel) {
 	this.plugin = plugin;
 	this.lyrParent = lyrParent;
 	this.jLabel = jLabel;
 	this.bDropdown = false;
 
-	// Create the label
+	/**
+	Setup the textbox / drop down and add it to a single layer.  Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		// Read the label details from JSON
 		this.x = parseInt(readJSON(this.jLabel.x, "label x","0"), 10);
@@ -1281,7 +1689,11 @@ function THM_Label (plugin, lyrParent, jLabel) {
 		this.lyrParent.addChild(this.lyrBG)
 	};
 
-	// Subscribe the drop down and clear the color overlay
+	/**
+	Subscribe the drop down and clear the color overlay.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.enable = function() {
 		// Subscribe and reset drop down
 		this.dd.subscribe();
@@ -1300,7 +1712,11 @@ function THM_Label (plugin, lyrParent, jLabel) {
 		this.lyrColor.addTween("red:0,green:0,blue:0,alpha:0,time:1");
 	};
 
-	// Unsubscribe the drop down and set a grey color overlay
+	/**
+	Unsubscribe the drop down and set a grey color overlay.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.disable = function() {
 		// Unsubscribe and reset drop down
 		this.dd.unsubscribe();
@@ -1315,7 +1731,11 @@ function THM_Label (plugin, lyrParent, jLabel) {
 		this.lyrColor.addTween("red:0,green:0,blue:0,alpha:0.33,time:1");
 	};
 
-	// Unsubscribe the drop down and set a green color overlay
+	/**
+	Unsubscribe the drop down and set a green color overlay.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showAnswer = function() {
 		// Unsubscribe and set drop down to show the answer
 		this.dd.unsubscribe();
@@ -1326,7 +1746,11 @@ function THM_Label (plugin, lyrParent, jLabel) {
 		this.lyrColor.addTween("red:0.5,green:1.0,blue:0.45,alpha:0.33,time:1");
 	};
 
-	// Check if the drop down is correct and animate the color overlay
+	/**
+	Check if the drop down is correct and animate the color overlay.
+	@param  {void} Nothing
+	@return {boolean} True is the user answered this label correctly otherwise false.
+	*/
 	this.check = function() {
 		var bResult;
 
@@ -1356,8 +1780,14 @@ function THM_Label (plugin, lyrParent, jLabel) {
 }
 THM_Label.prototype = new Osmosis();
 
-//------------------------------------------------------------------------------
-// The label map style question built by JSON
+/**
+The label map style question built by JSON
+@class THM_LabelingQuestion
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} configuration The JSON definetion of this question.
+@param  {object} thmDemo The refernce to this demo.
+@return {void} Nothing
+*/
 function THM_LabelingQuestion (plugin, configuration, thmDemo) {
 
 	// Scene specfic values
@@ -1383,7 +1813,11 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
     this.allLabels = [];
     this.currentLabels = [];
 
-	// endZoomOut - Trigger when the label map is safe the drag around again.
+    /**
+	Trigger when the label map is safe the drag around again.
+	@param  {object} that To protect the scope that is this.  Confusing?  Blame javascript.
+	@return {void} Nothing
+	*/
     this.endZoomOut = function(that) {
 		// Show the drop down menus and allow dragging
 		that.lyrDrop.setVisibility(true);
@@ -1393,7 +1827,12 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
 		that.thmDemo.hideCurtain();
 	}
 
-	// buttonDown - triggers when the user clicks on the change display button
+	/**
+	Triggers when the user clicks on the change display button.
+	@param  {number} x The x position of the mouse.
+	@param  {number} y The y position of the mouse.
+	@return {void} Nothing
+	*/
 	this.buttonDown = function(x,y) {
 		// Toggle the zoom boolean
 		this.bZoom = !this.bZoom;
@@ -1449,9 +1888,13 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
 		}
 	}
 
-	// Set the initialize function for a label map question
+	/**
+	Overload the initialize function for a label map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.initQuiz = function() {
-		logDebug("Concept map question initQuiz()");
+		logDebug("Label map question initQuiz()");
 		var i = 0;
 
 		// If no inheritence is specified then create everything from scratch
@@ -1579,9 +2022,13 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
 		this.bgLayer.addChild(rectInstruction);
 	};
 
-	// Set the display function for a label map question
+	/**
+	Overload the display function for a label map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.loadQuiz = function() {
-		logDebug("Concept map question loadQuiz()");
+		logDebug("Label map question loadQuiz()");
 
 		// Allow dragging and tween the background to the define position
 		this.lyrDrag.subscribe();
@@ -1612,9 +2059,13 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
 		}
 	};
 
-	// Set the clean up function for a label map question
+	/**
+	Overload the clean up function for a label map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.cleanUp = function() {
-		logDebug("Concept map question cleanUp()");
+		logDebug("Label map question cleanUp()");
 		// Resize the image to it's original size and unsubscribe it
 		this.sprImage.setDimensions(this.intImageWidth, this.intImageHeight);
 		this.lyrDrag.unsubscribe();
@@ -1626,24 +2077,36 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
 		}
 	};
 
-	// Set the reset function for a label map question
+	/**
+	Overload the reset function for a label map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.resetQuiz = function() {
-		logDebug("Concept map question resetQuiz()");
+		logDebug("Label map question resetQuiz()");
 		this.loadQuiz();
 	};
 
-	// Set the show correct answer function for a label map question
+	/**
+	Overload the show correct answer function for a label map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showCorrectAnswer = function() {
-		logDebug("Concept map question showCorrectAnswer()");
+		logDebug("Label map question showCorrectAnswer()");
 		// Show the answer for all the labels for this question
 		for(var i = this.enableFrom; i < this.enableTo; i++) {
 			this.allLabels[i].showAnswer();
 		}
 	};
 
-	// Set the check answer function for a label map question
+	/**
+	Overload the check answer function for a label map question.
+	@param  {void} Nothing
+	@return {boolean} True if the question is correct and false otherwise.
+	*/
 	this.checkAnswer = function() {
-		logDebug("Concept map question checkAnswer()");
+		logDebug("Label map question checkAnswer()");
 		var bResult = true;
 		// Check all the labels for this question
 		for(var i = this.enableFrom; i < this.enableTo; i++) {
@@ -1652,46 +2115,77 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
 		return bResult;
 	};
 
-	// Plugin call to add the scene
-	this.addScene = function() {
+	/**
+	Adds this scene to the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
+    this.addScene = function() {
         this.plugin.addScene(this.id);
     };
 
-	// Plugin call to move to the next scene
+	/**
+	Changes to the next scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.nextScene = function() {
         this.plugin.nextScene();
     };
 
-	// Plugin call to move to the previous scene
+	/**
+	Changes to the previous scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.prevScene = function() {
         this.plugin.prevScene();
     };
 
-	// Plugin call to move to the set the scene
+	/**
+	Sets the current scene to this one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.setScene = function() {
         this.plugin.setScene(this.getId());
     };
 
-	// Set the number of tries for the question
+	/**
+	Sets the number of tries for this scene.
+	@param  {number} tries The number of tries for this scene
+	@return {void} Nothing
+	*/
     this.setTries = function(tries) {
         if(typeof tries !== "number") {
-            logError("tries must have a value of type 'number'");
             return;
         }
         this.tries = tries;
     };
 
-	// Decrement the number of tries by one
+	/**
+	Decrements the number of tries by one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.decrementTries = function() {
         if(!(this.tries === 0)) {
             this.tries = this.tries - 1;
         }
     };
 
-	// Return the number of tries
+	/**
+	Gets the number of tries for this scene.
+	@param  {void} Nothing
+	@return {number} The number of tries for this scene
+	*/
     this.getTries = function() { return this.tries; };
 
-	// Set the boolean flag of if the question is correct
+	/**
+	Sets if the scene is correct
+	@param  {boolean} correct True if this scene is correct and false otherwise
+	@return {void} Nothing
+	*/
     this.setCorrect = function(correct) {
         if(typeof correct !== "boolean") {
             logError("correct must have a value of type 'boolean'");
@@ -1701,10 +2195,18 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
         this.completed = true;
     };
 
-	// Return the boolean flag of if the question is correct
+	/**
+	Gets if the scene is correct
+	@param  {void} Nothing
+	@return {boolean} True if this scene is correct and false otherwise
+	*/
     this.getCorrect = function() { return this.correct; };
 
-	// Set the boolean flag of if the question is complete
+	/**
+	Sets if the scene is completed
+	@param  {boolean} completed True if this scene is completed and false otherwise
+	@return {void} Nothing
+	*/
     this.setCompleted = function(completed) {
         if(typeof completed !== "boolean") {
             logError("completed must have a value of type 'boolean'");
@@ -1713,10 +2215,18 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
         this.completed = completed;
     };
 
-	// Return the boolean flag of if the question is complete
+	/**
+	Gets if the scene is completed
+	@param  {void} Nothing
+	@return {boolean} True if this scene is completed and false otherwise
+	*/
     this.getCompleted = function() { return this.completed; };
 
-	// Set the boolean flag of if the server has responded
+	/**
+	Sets if the scene status has been recieved by the server
+	@param  {boolean} serverStatus True if this scenes status has been recieved by the server and false otherwise
+	@return {void} Nothing
+	*/
     this.setServerStatus = function(serverStatus) {
         if(typeof serverStatus !== "boolean") {
             logError("serverStatus must have a value of type 'boolean'");
@@ -1725,19 +2235,36 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
         this.serverStatus = serverStatus;
     };
 
-	// Return the boolean flag of if the server has responded
+	/**
+	Gets if the scene status has been recieved by the server
+	@param  {void} Nothing
+	@return {boolean} True if this scenes status has been recieved by the server and false otherwise
+	*/
     this.getServerStatus = function() { return this.serverStatus; };
-};
+}
 THM_LabelingQuestion.prototype = new Osmosis();
-//------------------------------------------------------------------------------
-// A single match link
+/**
+A single match link pair
+@class THM_Match
+@param  {object} referenceA The match objects frist part of the pair.
+@param  {object} referenceB The match objects second part of the pair.
+@return {void} Nothing
+*/
 function THM_Match(referenceA, referenceB) {
 	this.referenceA = referenceA;
 	this.referenceB = referenceB;
 }
 
-//------------------------------------------------------------------------------
-// The match maker handle the logic to creating and removing connections.
+/**
+The match maker handle the logic to creating and removing connections.
+@class THM_MatchMaker
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The parent layer to add these matches too.
+@param  {object} arrObjects The array of the JSON definetions of all the matches.
+@param  {number} lines The maximum number of lines needed for this question.
+@param  {string} connectionColor The color to change the lines to once they have be connected.
+@return {void} Nothing
+*/
 function THM_MatchMaker(plugin, lyrParent, arrObjects, lines, connectionColor) {
 	this.plugin = plugin;
 	this.lines = lines;
@@ -1747,7 +2274,11 @@ function THM_MatchMaker(plugin, lyrParent, arrObjects, lines, connectionColor) {
 	this.arrPairs = [];
 	this.arrConnections = [];
 
-	// Create the layer and all the required connection lines
+	/**
+	Creates the layer and all the required connection lines.  Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 
 		// Create a background layer for all the lines
@@ -1773,7 +2304,12 @@ function THM_MatchMaker(plugin, lyrParent, arrObjects, lines, connectionColor) {
 		}
 	};
 
-	// Add a pair by the string and link them to actual objects
+	/**
+	Add a pair by the string and link them to actual objects.
+	@param  {string} strRefA The match objects frist part of the pair.
+	@param  {string} strRefB The match objects second part of the pair.
+	@return {void} Nothing
+	*/
 	this.addPair = function(strRefA, strRefB) {
 		var referenceA = undefined;
 		var referenceB = undefined;
@@ -1798,7 +2334,11 @@ function THM_MatchMaker(plugin, lyrParent, arrObjects, lines, connectionColor) {
 
 	};
 
-	// Clear previous answers and link the correct answers
+	/**
+	Clear previous answers and link the correct answers.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showAnswers = function() {
 		// Clear previous connections
 		this.resetConnections();
@@ -1810,7 +2350,11 @@ function THM_MatchMaker(plugin, lyrParent, arrObjects, lines, connectionColor) {
 		}
 	};
 
-	// Check all the connections and return if correct or not
+	/**
+	Check all the connections and return if correct or not.
+	@param  {void} Nothing
+	@return {boolean} True if all thematches are correct and false otherwise.
+	*/
 	this.checkAnswers = function() {
 		var count = 0;
 		var bResult = false;
@@ -1848,14 +2392,23 @@ function THM_MatchMaker(plugin, lyrParent, arrObjects, lines, connectionColor) {
 		return count === this.arrConnections.length;
 	};
 
-	// Go though each object and remove the connections
+	/**
+	Clear previous answers and link the correct answers.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.resetConnections = function() {
 		for( var i = 0; i < this.arrObjects.length; i++) {
 			this.removeConnection(i, false);
 		}
 	};
 
-	// Remove a connection based on one of the object references
+	/**
+	Remove a connection based on one of the object references
+	@param  {number} index The index number of the matchs to remove.
+	@param  {boolean} bAnimate If true then animated the color change other just do it.
+	@return {void} Nothing
+	*/
 	this.removeConnection = function(index, bAnimate) {
 		// Go though each connection
 		for(var i = 0; i < this.arrConnections.length; i++) {
@@ -1884,7 +2437,13 @@ function THM_MatchMaker(plugin, lyrParent, arrObjects, lines, connectionColor) {
 		}
 	};
 
-	// Add connection and color the object as disabled for visual cue
+	/**
+	Add connection and color the object as disabled for visual cue
+	@param  {number} indexA The index number of the first match.
+	@param  {number} indexB The index number of the first match.
+	@param  {string} disabledColor The color to change the matching line to.
+	@return {void} Nothing
+	*/
 	this.addConnection = function(indexA, indexB, disabledColor) {
 		// If both indexes are valid
 		if(indexA >= 0 && indexB >= 0) {
@@ -1934,8 +2493,15 @@ function THM_MatchMaker(plugin, lyrParent, arrObjects, lines, connectionColor) {
 }
 THM_MatchMaker.prototype = new Osmosis();
 
-//------------------------------------------------------------------------------
-// The matching line the updates as the user drags around the screen
+
+/**
+The matching line the updates as the user drags around the screen.
+@class THM_MatchMaker
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The parent layer to add these matches too.
+@param  {string} overlayColor The color of tthe overlay line that gets dragged.
+@return {void} Nothing
+*/
 function THM_MatchingLine(plugin, lyrParent, overlayColor) {
 	this.plugin = plugin;
 	this.lyrParent = lyrParent;
@@ -1944,7 +2510,11 @@ function THM_MatchingLine(plugin, lyrParent, overlayColor) {
 	this.funcScope = undefined;
 	this.arrRects = [];
 
-	// Create the draggable line
+	/**
+	Creates the layer and the draggable line.  Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 
 		// Set the line to by accross the screen so it triggers no matter where the mouse is
@@ -1964,12 +2534,25 @@ function THM_MatchingLine(plugin, lyrParent, overlayColor) {
 		this.lyrParent.addChild(this.dragLine);
 	};
 
-	// Add a objects rectangle to the list for checking where the mouse is
+	/**
+	Add a objects rectangle to the list for checking where the mouse is.
+	@param  {number} num The index number of this rectangle.
+	@param  {number} x The x position of the rectangle
+	@param  {number} y The y position of the rectangle
+	@param  {number} width The width of the rectangle
+	@param  {number} height The height of the rectangle
+	@return {void} Nothing
+	*/
 	this.addRect = function(num, x, y, width, height) {
 		this.arrRects[num] = new Rectangle(x, y, width, height);
 	};
 
-	// When the user start dragging figure out if the mouse is over an object
+	/**
+	Triggered when the user start dragging figure out if the mouse is over an object.
+	@param  {number} x The x position of the mouse.
+	@param  {number} y The y position of the mouse.
+	@return {void} Nothing
+	*/
 	this.startDrag = function(x,y) {
 		var pntMouse = new Point(x,y);
 
@@ -1982,7 +2565,12 @@ function THM_MatchingLine(plugin, lyrParent, overlayColor) {
 		}
 	};
 
-	// When the user start dragging figure out if the mouse is over an object
+	/**
+	Triggered when the user stops dragging figure.
+	@param  {number} x The x position of the mouse.
+	@param  {number} y The y position of the mouse.
+	@return {void} Nothing
+	*/
 	this.stopDrag = function(x,y) {
 		var pntMouse = new Point(x,y);
 
@@ -1994,19 +2582,32 @@ function THM_MatchingLine(plugin, lyrParent, overlayColor) {
 		}
 	};
 
-	// This callback notifies the question when the line is being dragging
+	/**
+	This callback notifies the question when the line is being dragging.
+	@param  {number} numObject The index of the object clicked on.
+	@param  {number} bDragging True if the mouse is down and false otherwise.
+	@return {void} Nothing
+	*/
 	this.isDragging = function(numObject, bDragging) {
 		if(this.funcDrag !== undefined && this.funcScope !== undefined) {
 			this.funcDrag.apply(this.funcScope, arguments);
 		}
 	};
 
-	// Shortcut to subscribe the draggble line.
+	/**
+	Shortcut to subscribe the draggble line.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.subscribe = function() {
 		this.dragLine.subscribe();
 	};
 
-	// Shortcut to UNsubscribe the draggble line.
+	/**
+	Shortcut to unsubscribe the draggble line.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.unsubscribe = function() {
 		this.dragLine.unsubscribe();
 	};
@@ -2014,8 +2615,13 @@ function THM_MatchingLine(plugin, lyrParent, overlayColor) {
 	this.create();
 }
 
-//------------------------------------------------------------------------------
-// The matching style question built by JSON
+/**
+The matching style question built by JSON
+@class THM_MatchingQuestion
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} configuration The JSON definetion of this question.
+@return {void} Nothing
+*/
 function THM_MatchingQuestion (plugin, configuration) {
 
 	// Scene specfic values
@@ -2055,7 +2661,12 @@ function THM_MatchingQuestion (plugin, configuration) {
 	this.numLast = -1;
 	this.matchMaker;
 
-	// The callback from an item that's its being dragged
+	/**
+	The callback from an item that's its being dragged.
+	@param  {number} numObject The index of the object clicked on.
+	@param  {number} bDragging True if the mouse is down and false otherwise.
+	@return {void} Nothing
+	*/
 	this.isDragging = function(numObject, bDragging) {
 		this.numObject = numObject;
 		this.bIsDragging = bDragging;
@@ -2079,7 +2690,11 @@ function THM_MatchingQuestion (plugin, configuration) {
 		}
 	};
 
-	// Set the initialize function for a matching question
+	/**
+	Overload the initialize function for a matching question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.initQuiz = function() {
 		logDebug("Matching question initQuiz()");
 		var i = 0;
@@ -2266,7 +2881,11 @@ function THM_MatchingQuestion (plugin, configuration) {
 
 	};
 
-	// Set the display function for a matching question
+	/**
+	Overload the display function for a matching question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.loadQuiz = function() {
 		logDebug("Matching question loadQuiz()");
 		// Enable the draggable line
@@ -2277,71 +2896,118 @@ function THM_MatchingQuestion (plugin, configuration) {
 		this.matchMaker.resetConnections();
 	};
 
-	// Set the clean up function for a matching question
+	/**
+	Overload the clean up function for a matching question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.cleanUp = function() {
 		logDebug("Matching question cleanUp()");
 		// Disable the draggable line
 		this.dragLine.unsubscribe();
 	};
 
-	// Set the reset function for a matching question
+	/**
+	Overload the reset function for a matching question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.resetQuiz = function() {
 		logDebug("Matching question resetQuiz()");
 		this.loadQuiz();
 	};
 
-	// Set the show correct answer animation for a matching question
+	/**
+	Overload the show correct answer animation function for a matching question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showCorrectAnswer = function() {
 		logDebug("Matching question showCorrectAnswer()");
 		this.matchMaker.showAnswers();
 	};
 
-	// Set the check answer function for a matching question
+	/**
+	Overload the check answer function for a matching question.
+	@param  {void} Nothing
+	@return {boolean} True if correct and false otherwise.
+	*/
 	this.checkAnswer = function() {
 		logDebug("Matching question checkAnswer()");
 		return this.matchMaker.checkAnswers();
 	};
 
-	// Plugin call to add the scene
-	this.addScene = function() {
+	/**
+	Adds this scene to the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
+    this.addScene = function() {
         this.plugin.addScene(this.id);
     };
 
-	// Plugin call to move to the next scene
+	/**
+	Changes to the next scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.nextScene = function() {
         this.plugin.nextScene();
     };
 
-	// Plugin call to move to the previous scene
+	/**
+	Changes to the previous scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.prevScene = function() {
         this.plugin.prevScene();
     };
 
-	// Plugin call to move to the set the scene
+	/**
+	Sets the current scene to this one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.setScene = function() {
         this.plugin.setScene(this.getId());
     };
 
-	// Set the number of tries for the question
+	/**
+	Sets the number of tries for this scene.
+	@param  {number} tries The number of tries for this scene
+	@return {void} Nothing
+	*/
     this.setTries = function(tries) {
         if(typeof tries !== "number") {
-            logError("tries must have a value of type 'number'");
             return;
         }
         this.tries = tries;
     };
 
-	// Decrement the number of tries by one
+	/**
+	Decrements the number of tries by one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.decrementTries = function() {
         if(!(this.tries === 0)) {
             this.tries = this.tries - 1;
         }
     };
 
-	// Return the number of tries
+	/**
+	Gets the number of tries for this scene.
+	@param  {void} Nothing
+	@return {number} The number of tries for this scene
+	*/
     this.getTries = function() { return this.tries; };
 
-	// Set the boolean flag of if the question is correct
+	/**
+	Sets if the scene is correct
+	@param  {boolean} correct True if this scene is correct and false otherwise
+	@return {void} Nothing
+	*/
     this.setCorrect = function(correct) {
         if(typeof correct !== "boolean") {
             logError("correct must have a value of type 'boolean'");
@@ -2351,10 +3017,18 @@ function THM_MatchingQuestion (plugin, configuration) {
         this.completed = true;
     };
 
-	// Return the boolean flag of if the question is correct
+	/**
+	Gets if the scene is correct
+	@param  {void} Nothing
+	@return {boolean} True if this scene is correct and false otherwise
+	*/
     this.getCorrect = function() { return this.correct; };
 
-	// Set the boolean flag of if the question is complete
+	/**
+	Sets if the scene is completed
+	@param  {boolean} completed True if this scene is completed and false otherwise
+	@return {void} Nothing
+	*/
     this.setCompleted = function(completed) {
         if(typeof completed !== "boolean") {
             logError("completed must have a value of type 'boolean'");
@@ -2363,10 +3037,18 @@ function THM_MatchingQuestion (plugin, configuration) {
         this.completed = completed;
     };
 
-	// Return the boolean flag of if the question is complete
+	/**
+	Gets if the scene is completed
+	@param  {void} Nothing
+	@return {boolean} True if this scene is completed and false otherwise
+	*/
     this.getCompleted = function() { return this.completed; };
 
-	// Set the boolean flag of if the server has responded
+	/**
+	Sets if the scene status has been recieved by the server
+	@param  {boolean} serverStatus True if this scenes status has been recieved by the server and false otherwise
+	@return {void} Nothing
+	*/
     this.setServerStatus = function(serverStatus) {
         if(typeof serverStatus !== "boolean") {
             logError("serverStatus must have a value of type 'boolean'");
@@ -2375,12 +3057,23 @@ function THM_MatchingQuestion (plugin, configuration) {
         this.serverStatus = serverStatus;
     };
 
-	// Return the boolean flag of if the server has responded
+	/**
+	Gets if the scene status has been recieved by the server
+	@param  {void} Nothing
+	@return {boolean} True if this scenes status has been recieved by the server and false otherwise
+	*/
     this.getServerStatus = function() { return this.serverStatus; };
-};
+}
 THM_MatchingQuestion.prototype = new Osmosis();
-//------------------------------------------------------------------------------
-// A generic object with a background rectangle and label
+/**
+A generic object with a background rectangle and label
+@class THM_Object
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The parent layer to add these objects too.
+@param  {number} numObject The number to passed along in callbacks.
+@param  {object} jObject The object JSON defination.
+@return {void} Nothing
+*/
 function THM_Object(plugin, lyrParent, numObject, jObject) {
 	// Setup local varibles
     this.plugin = plugin;
@@ -2394,7 +3087,11 @@ function THM_Object(plugin, lyrParent, numObject, jObject) {
 	// The minimum amount the layout can span
 	this.minPercent = 0.25;
 
-	// Setup the item and add it to the passed parent
+	/**
+	Creates the item and adds it to the passed parent. Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		this.name = readJSON(this.jObject.name, "object " + this.numObject + " name","untitled");
 
@@ -2459,7 +3156,11 @@ function THM_Object(plugin, lyrParent, numObject, jObject) {
 		this.lyrParent.addChild(this.lyrItem);
 	};
 
-	// Preform any layout organizing needed
+	/**
+	Preforms any layout organizing needed. Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.layout = function() {
 		var rectImage = new Rectangle(this.sprItem.x, this.sprItem.y, this.sprItem.width, this.sprItem.height);
 		var rectText = new Rectangle(this.lblItem.x, this.lblItem.y, this.lblItem.width, this.lblItem.height);
@@ -2565,13 +3266,22 @@ function THM_Object(plugin, lyrParent, numObject, jObject) {
 		this.lblItem.setDimensions(rectText.width, rectText.height);
 	}
 
-	// Send the object to the front of the display list
+	/**
+	Send the object to the front of the display list.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.sendToFront = function() {
 		this.lyrParent.removeChild(this.lyrItem);
 		this.lyrParent.addChild(this.lyrItem);
 	}
 
-	// The start drag callback function
+	/**
+	Triggered when the user start dragging object.
+	@param  {number} x The x position of the mouse.
+	@param  {number} y The y position of the mouse.
+	@return {void} Nothing
+	*/
 	this.startDrag = function(x,y) {
 		if(this.bBringToFront) {
 			this.sendToFront();
@@ -2581,46 +3291,90 @@ function THM_Object(plugin, lyrParent, numObject, jObject) {
 		this.isDragging(this.numObject, true);
 	};
 
-	// The stop drag callback function
+	/**
+	Triggered when the user stastopsrt dragging object.
+	@param  {number} x The x position of the mouse.
+	@param  {number} y The y position of the mouse.
+	@return {void} Nothing
+	*/
 	this.stopDrag = function(x,y) {
 		this.x = x;
 		this.y = y;
 		this.isDragging(this.numObject, false);
 	};
 
-	// This callback notifies the demo when an item is dragging
+	/**
+	This callback notifies the question when the line is being dragging.
+	@param  {number} numObject The index of the object clicked on.
+	@param  {number} bDragging True if the mouse is down and false otherwise.
+	@return {void} Nothing
+	*/
 	this.isDragging = function(numObject, bDragging) {
 		if(this.funcDrag !== undefined && this.funcScope !== undefined) {
 			this.funcDrag.apply(this.funcScope, arguments);
 		}
 	};
 
-	// Wrapper subscribe function
+	/**
+	Shortcut to subscribe the draggble line.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.subscribe = function() {
 		this.lyrItem.subscribe();
 	};
 
-	// Wrapper unsubscribe function
+	/**
+	Shortcut to unsubscribe the draggble line.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.unsubscribe = function() {
 		this.lyrItem.unsubscribe();
 	};
 
+	/**
+	Set up a color tween of the background rectangle.
+	@param  {number} r The new amount of red (range 0 to 1).
+	@param  {number} g The new amount of green (range 0 to 1).
+	@param  {number} b The new amount of blue (range 0 to 1).
+	@param  {number} a The new amount of alpha (range 0 to 1).
+	@param  {number} time The amount of time the tween will take.
+	@param  {number} delay The amount of time to wait before starting the tween.
+	@return {void} Nothing
+	*/
 	this.colorTween = function(r, g, b, a, time, delay) {
 		this.strLastColor.setColor(this.strBgColor.r, this.strBgColor.g, this.strBgColor.b, this.strBgColor.a);
 		this.strBgColor.setColor(r, g, b, a);
 		this.rectItem.addTween("red:" + r + ",green:" + g + ",blue:" + b + ",alpha:" + a + ",time:" + time + ",delay:" + delay);
 	}
 
+	/**
+	Set up a color tween of the background rectangle back to it's original color.
+	@param  {number} time The amount of time the tween will take.
+	@param  {number} delay The amount of time to wait before starting the tween.
+	@return {void} Nothing
+	*/
 	this.originalTween = function(time, delay) {
 		this.rectItem.addTween("red:" + this.strOrgColor.r + ",green:" + this.strOrgColor.g + ",blue:" + this.strOrgColor.b + ",alpha:" + this.strOrgColor.a + ",time:" + time + ",delay:" + delay);
 	}
 
+	/**
+	Set up a color tween of the background rectangle back to it's last color.
+	@param  {number} time The amount of time the tween will take.
+	@param  {number} delay The amount of time to wait before starting the tween.
+	@return {void} Nothing
+	*/
 	this.resetTween = function(time, delay) {
 		this.strBgColor.setColor(this.strLastColor.r, this.strLastColor.g, this.strLastColor.b, this.strLastColor.a);
 		this.rectItem.addTween("red:" + this.strLastColor.r + ",green:" + this.strLastColor.g + ",blue:" + this.strLastColor.b + ",alpha:" + this.strLastColor.a + ",time:" + time + ",delay:" + delay);
 	}
 
-	// The answer animation routine
+	/**
+	The answer animation routine.
+	@param  {boolean} bCorrect If true color rectangle green else color rectangle red.
+	@return {void} Nothing
+	*/
 	this.showCorrect = function(bCorrect) {
 		// If correct tween green
 		if(bCorrect) {
@@ -2638,8 +3392,19 @@ function THM_Object(plugin, lyrParent, numObject, jObject) {
 	this.layout();
 }
 THM_Object.prototype = new Osmosis();
-//------------------------------------------------------------------------------
-// The ordering grid that notifies the demo when the mouse goes over a new part of the grid
+/**
+The ordering grid that notifies the demo when the mouse goes over a new part of the grid
+@class THM_OrderGrid
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The parent layer to add this grid too.
+@param  {number} x The x position of the grid.
+@param  {number} y The y position of the grid.
+@param  {number} width The width of the grid.
+@param  {number} height The height of the grid.
+@param  {number} object The number of objects in grid.
+@param  {boolean} layout If true the layout is horizontal else the layout is vertical.
+@return {void} Nothing
+*/
 function THM_OrderGrid(plugin, lyrParent, x, y, width, height, objects, layout) {
 	// Setup local varibles
     this.plugin = plugin;
@@ -2655,14 +3420,18 @@ function THM_OrderGrid(plugin, lyrParent, x, y, width, height, objects, layout) 
 	this.funcGrid = undefined;
 	this.funcScope = undefined;
 
-	// Setup the grid and add it to the passed parent
+	/**
+	Creates the grid and adds it to the passed parent. Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		// Create the layer for each item
 		this.lyrGrid = new Layer(this.plugin, this.x, this.y, this.width, this.height);
 		this.lyrGrid.setColor(0,0,0,0);
 		this.id = this.lyrGrid.id;
 
-		//Create each section of the grid and assign a callback based on the grid position
+		// Create each section of the grid and assign a callback based on the grid position.
 		var strCall;
 		this.sprGrid = [];
 		for(var i = 0; i < this.objects; i++) {
@@ -2694,21 +3463,33 @@ function THM_OrderGrid(plugin, lyrParent, x, y, width, height, objects, layout) 
 	this.mouseOver8 = function(x,y) { this.overGrid(8); };
 	this.mouseOver9 = function(x,y) { this.overGrid(9); };
 
-	// Wrapper subscribe function
+	/**
+	Shortcut to subscribe the grid
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.subscribe = function() {
 		for(var i = 0; i < this.objects; i++) {
 			this.sprGrid[i].subscribe();
 		}
 	};
 
-	// Wrapper unsubscribe function
+	/**
+	Shortcut to unsubscribe the grid
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.unsubscribe = function() {
 		for(var i = 0; i < this.objects; i++) {
 			this.sprGrid[i].unsubscribe();
 		}
 	};
 
-	// This callback notifies the demo when the mouse goes over a new part of the grid
+	/**
+	This callback notifies the demo when the mouse goes over a new part of the grid.
+	@param  {number} gridNumber The index of the of the part of the grid the user is over.
+	@return {void} Nothing
+	*/
 	this.overGrid = function(gridNumber) {
 		if(this.funcGrid !== undefined && this.funcScope !== undefined) {
 			this.funcGrid.apply(this.funcScope, arguments);
@@ -2720,8 +3501,13 @@ function THM_OrderGrid(plugin, lyrParent, x, y, width, height, objects, layout) 
 }
 THM_OrderGrid.prototype = new Osmosis();
 
-//------------------------------------------------------------------------------
-// The ordering style question built by JSON
+/**
+The ordering style question built by JSON
+@class THM_OrderingQuestion
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} configuration The JSON definetion of this question.
+@return {void} Nothing
+*/
 function THM_OrderingQuestion (plugin, configuration) {
 
 	// Scene specfic values
@@ -2766,7 +3552,11 @@ function THM_OrderingQuestion (plugin, configuration) {
 	this.placeHolder = 0;
 	this.bIsDragging = false;
 
-	// The reposition the items based on the arrOrder
+	/**
+	The reposition the items based on the arrOrder
+	@param  {boolean} bAnimate If true animate the objects to the correct positions otherwise warp them.
+	@return {void} Nothing
+	*/
 	this.positionOrder = function(bAnimate) {
 		var newX;
 		var newY;
@@ -2803,7 +3593,11 @@ function THM_OrderingQuestion (plugin, configuration) {
 		}
 	};
 
-	// The callback from the grid of whre in the grid the mouse is
+	/**
+	The callback from the grid of whre in the grid the mouse is.
+	@param  {number} gridNumber The index value of the part of the grid the mouse is over.
+	@return {void} Nothing
+	*/
 	this.overGrid = function(gridNumber) {
 		if(this.bIsDragging) {
 			// Remove the element for the order array
@@ -2820,7 +3614,12 @@ function THM_OrderingQuestion (plugin, configuration) {
 		}
 	};
 
-	// The callback from an item that's its being dragged
+	/**
+	The callback from an object that's its being dragged
+	@param  {number} numObject The index of the object clicked on.
+	@param  {number} bDragging True if the mouse is down and false otherwise.
+	@return {void} Nothing
+	*/
 	this.isDragging = function(numItem, bDragging) {
 		var i = 0;
 		this.bIsDragging = bDragging;
@@ -2847,7 +3646,11 @@ function THM_OrderingQuestion (plugin, configuration) {
 		}
 	};
 
-	// Set the initialize function for a ordering question
+	/**
+	Overload the initialize function for a ordering question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.initQuiz = function() {
 		logDebug("Ordering question initQuiz()");
 
@@ -2918,7 +3721,11 @@ function THM_OrderingQuestion (plugin, configuration) {
 		}
 	};
 
-	// Set the display function for a ordering question
+	/**
+	Overload the display function for a ordering question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.loadQuiz = function() {
 		logDebug("Ordering question loadQuiz()");
 		// Set the items back to the original order
@@ -2934,7 +3741,11 @@ function THM_OrderingQuestion (plugin, configuration) {
 		this.grid.subscribe();
 	};
 
-	// Set the clean up function for a ordering question
+	/**
+	Overload the clean up function for a ordering question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.cleanUp = function() {
 		logDebug("Ordering question cleanUp()");
 		// Remove all the subscriptions for this question
@@ -2944,12 +3755,20 @@ function THM_OrderingQuestion (plugin, configuration) {
 		this.grid.unsubscribe();
 	};
 
-	// Set the reset function for a ordering question
+	/**
+	Overload the reset function for a ordering question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.resetQuiz = function() {
 		logDebug("Ordering question resetQuiz()");
 	};
 
-	// Set the show correct answer function for Q1
+	/**
+	Overload the show correct answer function for a ordering question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showCorrectAnswer = function() {
 		logDebug("Ordering question showCorrectAnswer()");
 
@@ -2963,7 +3782,11 @@ function THM_OrderingQuestion (plugin, configuration) {
 		this.positionOrder(true);
 	};
 
-	// Set the check answer function for a ordering question
+	/**
+	Overload the check answer function for a ordering question.
+	@param  {void} Nothing
+	@return {boolean} True if correct and false otherwise.
+	*/
 	this.checkAnswer = function() {
 		logDebug("Ordering question checkAnswer()");
 
@@ -2980,46 +3803,77 @@ function THM_OrderingQuestion (plugin, configuration) {
 		return bResult;
 	};
 
-	// Plugin call to add the scene
-	this.addScene = function() {
+	/**
+	Adds this scene to the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
+    this.addScene = function() {
         this.plugin.addScene(this.id);
     };
 
-	// Plugin call to move to the next scene
+	/**
+	Changes to the next scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.nextScene = function() {
         this.plugin.nextScene();
     };
 
-	// Plugin call to move to the previous scene
+	/**
+	Changes to the previous scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.prevScene = function() {
         this.plugin.prevScene();
     };
 
-	// Plugin call to move to the set the scene
+	/**
+	Sets the current scene to this one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.setScene = function() {
         this.plugin.setScene(this.getId());
     };
 
-	// Set the number of tries for the question
+	/**
+	Sets the number of tries for this scene.
+	@param  {number} tries The number of tries for this scene
+	@return {void} Nothing
+	*/
     this.setTries = function(tries) {
         if(typeof tries !== "number") {
-            logError("tries must have a value of type 'number'");
             return;
         }
         this.tries = tries;
     };
 
-	// Decrement the number of tries by one
+	/**
+	Decrements the number of tries by one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.decrementTries = function() {
         if(!(this.tries === 0)) {
             this.tries = this.tries - 1;
         }
     };
 
-	// Return the number of tries
+	/**
+	Gets the number of tries for this scene.
+	@param  {void} Nothing
+	@return {number} The number of tries for this scene
+	*/
     this.getTries = function() { return this.tries; };
 
-	// Set the boolean flag of if the question is correct
+	/**
+	Sets if the scene is correct
+	@param  {boolean} correct True if this scene is correct and false otherwise
+	@return {void} Nothing
+	*/
     this.setCorrect = function(correct) {
         if(typeof correct !== "boolean") {
             logError("correct must have a value of type 'boolean'");
@@ -3029,10 +3883,18 @@ function THM_OrderingQuestion (plugin, configuration) {
         this.completed = true;
     };
 
-	// Return the boolean flag of if the question is correct
+	/**
+	Gets if the scene is correct
+	@param  {void} Nothing
+	@return {boolean} True if this scene is correct and false otherwise
+	*/
     this.getCorrect = function() { return this.correct; };
 
-	// Set the boolean flag of if the question is complete
+	/**
+	Sets if the scene is completed
+	@param  {boolean} completed True if this scene is completed and false otherwise
+	@return {void} Nothing
+	*/
     this.setCompleted = function(completed) {
         if(typeof completed !== "boolean") {
             logError("completed must have a value of type 'boolean'");
@@ -3041,10 +3903,18 @@ function THM_OrderingQuestion (plugin, configuration) {
         this.completed = completed;
     };
 
-	// Return the boolean flag of if the question is complete
+	/**
+	Gets if the scene is completed
+	@param  {void} Nothing
+	@return {boolean} True if this scene is completed and false otherwise
+	*/
     this.getCompleted = function() { return this.completed; };
 
-	// Set the boolean flag of if the server has responded
+	/**
+	Sets if the scene status has been recieved by the server
+	@param  {boolean} serverStatus True if this scenes status has been recieved by the server and false otherwise
+	@return {void} Nothing
+	*/
     this.setServerStatus = function(serverStatus) {
         if(typeof serverStatus !== "boolean") {
             logError("serverStatus must have a value of type 'boolean'");
@@ -3053,12 +3923,22 @@ function THM_OrderingQuestion (plugin, configuration) {
         this.serverStatus = serverStatus;
     };
 
-	// Return the boolean flag of if the server has responded
+	/**
+	Gets if the scene status has been recieved by the server
+	@param  {void} Nothing
+	@return {boolean} True if this scenes status has been recieved by the server and false otherwise
+	*/
     this.getServerStatus = function() { return this.serverStatus; };
-};
+}
 THM_OrderingQuestion.prototype = new Osmosis();
-//------------------------------------------------------------------------------
-// Socket Item data structure
+/**
+Socket Item data structure
+@class THM_Socket
+@param  {number} x The x position of the center of the socket.
+@param  {number} y The y position of the center of the socket.
+@param  {object} objAnswer The the object that should be in the socket for the answer to be correct.
+@return {void} Nothing
+*/
 function THM_Socket(x, y, objAnswer) {
 	// Local socket varibles
 	this.pntCenter = new Point(x,y);
@@ -3066,8 +3946,16 @@ function THM_Socket(x, y, objAnswer) {
 	this.objItem = null;
 }
 
-//------------------------------------------------------------------------------
-// Socket List the list of all the socket items
+/**
+Socket List the list of all the socket items
+@class THM_Sockets
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The parent layer to add these objects too.
+@param  {object} jObject The socket JSON defination.
+@param  {object} stack Reference to the object stack.
+@param  {number} maxDist The maximum distance that an object will snap to a socket in pixels.
+@return {void} Nothing
+*/
 function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 	// Local socket list varibles
 	this.plugin = plugin;
@@ -3077,7 +3965,11 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 	this.stack = stack;
 	this.maxDistance = maxDist * maxDist;
 
-	// Create the socket list based on the socket JSON
+	/**
+	Creates the socket list based on the socket JSON. Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		// Temporary location varibles
 		var socketX = 0;
@@ -3120,14 +4012,22 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 		}
 	};
 
-	// Reset of the sockets to be empty
+	/**
+	Resets all the sockets to be empty.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.reset = function() {
 		for(var i = 0; i < this.arrSocket.length; i++) {
 			this.arrSocket[i].objItem = null;
 		}
 	};
 
-	// Go through the sockut list and unsocket any item that matches
+	/**
+	Go through the socket list and unsocket any item that matches.
+	@param  {object} objItem Unsocket this item if socketed in the list.
+	@return {void} Nothing
+	*/
 	this.unsocket = function(objItem) {
 		for(var i = 0; i < this.arrSocket.length; i++) {
 			if(this.arrSocket[i].objItem === objItem) {
@@ -3136,7 +4036,11 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 		}
 	};
 
-	// Setup any show answer animations required
+	/**
+	Setup any show answer animations required.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showAnimation = function() {
 		var newX;
 		var newY;
@@ -3158,7 +4062,11 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 		}
 	};
 
-	// Check if all the objects are in the correct location
+	/**
+	Setup any show answer animations required.
+	@param  {void} Nothing
+	@return {boolean} True if every socket has the correct object in it and false otherwise.
+	*/
 	this.check = function() {
 		// Setup boolean flag
 		var bResult = true;
@@ -3177,7 +4085,11 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 		return bResult;
 	};
 
-	// Find the closest empty socket to the passed object
+	/**
+	Find the closest empty socket to the passed object.
+	@param  {object} objItem Find the socket closest to this socket.
+	@return {number} Returns -1 for no sockets within the maxDist and or return the index number of the socket availible.
+	*/
 	this.findClosest = function(objItem) {
 		// Local positioning variables
 		var xTemp = 0;
@@ -3213,8 +4125,15 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 	this.create();
 }
 
-//------------------------------------------------------------------------------
-// Create a stack of objects
+/**
+Creates a stack of objects.
+@class THM_Stack
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The parent layer to add these objects too.
+@param  {object} jStack The stacks JSON definetion.
+@param  {object} position Rectangle defination of the question layout.
+@return {void} Nothing
+*/
 function THM_Stack(plugin, lyrParent, jStack, position) {
 	this.plugin = plugin;
 	this.lyrParent = lyrParent;
@@ -3235,7 +4154,11 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 	this.funcDrag = undefined;
 	this.funcScope = undefined;
 
-	// Setup the item and add it to the passed parent
+	/**
+	Creates the stack and adds it to the passed parent. Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 
 		// Local temporary varibles for randomization
@@ -3299,14 +4222,23 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 		}
 	};
 
-	// The callback from an item that's its being dragged
+	/**
+	The callback from an object that's its being dragged
+	@param  {number} numObject The index of the object clicked on.
+	@param  {number} bDragging True if the mouse is down and false otherwise.
+	@return {void} Nothing
+	*/
 	this.isDragging = function(numItem, bDragging) {
 		if(this.funcDrag !== undefined && this.funcScope !== undefined) {
 			this.funcDrag.apply(this.funcScope, arguments);
 		}
 	};
 
-	// Get the name of an object in the stack and return the object
+	/**
+	Get the name of an object in the stack and return the object
+	@param  {string} name The name of the object we're looking for.
+	@return {object} Returns the object reference if found and undefined otherwise.
+	*/
 	this.getName = function(name) {
 		for(var i = 0; i < this.arrStack.length; i++) {
 			// If the passed name matches a stack item then return the pointer
@@ -3319,7 +4251,13 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 		return undefined;
 	};
 
-	// Snap the passed item number to the passed location
+	/**
+	Snap the passed item number to the passed location.
+	@param  {number} numItem The object index to snap.
+	@param  {number} x The x position to the snap the object to.
+	@param  {number} y The y position to the snap the object to.
+	@return {void} Nothing
+	*/
 	this.snap = function(numItem, x, y) {
 		this.arrStack[numItem].x = x;
 		this.arrStack[numItem].y = y;
@@ -3328,14 +4266,22 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 		this.enable();
 	};
 
-	// Set the passed item to tween by to it's origin
+	/**
+	Set the passed item to tween by to it's origin in the stack.
+	@param  {number} numItem The object index to tween back to stack.
+	@return {void} Nothing
+	*/
 	this.origin = function(numItem) {
 		this.arrStack[numItem].addTween("x:"+this.arrStack[numItem].originX+",y:"+this.arrStack[numItem].originY+",time:1");
 		this.arrStack[numItem].inStack = true;
 		this.enable();
 	};
 
-	// Snap all the stack object back to the stack
+	/**
+	Snap all the stack object back to the stack.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.reset = function() {
 		this.index = this.arrStack.length - 1;
 		for(var i = 0; i < this.arrStack.length; i++) {
@@ -3345,7 +4291,11 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 		this.enable();
 	};
 
-	// Enable only the top of the stack or any objects outside of the stack
+	/**
+	Enable only the top of the stack or any objects outside of the stack.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.enable = function() {
 		var last = this.arrStack[0];
 		for(var i = 0; i < this.arrStack.length; i++) {
@@ -3362,7 +4312,11 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 		last.subscribe();
 	};
 
-	// Unsubscribe everything
+	/**
+	Unsubscribe everything
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.disable = function() {
 		for(var i = 0; i < this.arrStack.length; i++) {
 			this.arrStack[i].unsubscribe();
@@ -3372,8 +4326,13 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 	this.create();
 }
 
-//------------------------------------------------------------------------------
-// The placement style question built by JSON
+/**
+The placement style question built by JSON
+@class THM_PlacementQuestion
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} configuration The JSON definetion of this question.
+@return {void} Nothing
+*/
 function THM_PlacementQuestion (plugin, configuration) {
 	DEBUG_MODE = true;
 
@@ -3423,7 +4382,12 @@ function THM_PlacementQuestion (plugin, configuration) {
 	this.stack = null;
 	this.sockets = null;
 
-	// The local call back for dragging the objects
+	/**
+	The local call back for dragging the objects.
+	@param  {number} numItem The index of the object clicked on.
+	@param  {number} bDragging True if the mouse is down and false otherwise.
+	@return {void} Nothing
+	*/
 	this.objDrag = function(numItem, bDragging) {
 		// Local temporary varibles
 		var numResult = 0;
@@ -3457,7 +4421,11 @@ function THM_PlacementQuestion (plugin, configuration) {
 		}
 	};
 
-	// Set the initialize function for Placement Question
+	/**
+	Overload the initialize function for a placement question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.initQuiz = function() {
 		logDebug("Placement question initQuiz()");
 
@@ -3480,7 +4448,11 @@ function THM_PlacementQuestion (plugin, configuration) {
 		this.sockets = new THM_Sockets(this.plugin, this.bgSockets, this.jSockets, this.stack, this.maxDistance);
 	};
 
-	// Set the display function for Placement Question
+	/**
+	Overload the display function for a placement question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.loadQuiz = function() {
 		logDebug("Placement question loadQuiz()");
 
@@ -3489,7 +4461,11 @@ function THM_PlacementQuestion (plugin, configuration) {
 		this.sockets.reset();
 	};
 
-	// Set the clean up function for Placement Question
+	/**
+	Overload the clean up  function for a placement question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.cleanUp = function() {
 
 		logDebug("Placement question cleanUp()");
@@ -3497,64 +4473,107 @@ function THM_PlacementQuestion (plugin, configuration) {
 		this.stack.disable();
 	};
 
-	// Set the reset function for Placement Question
+	/**
+	Overload the reset function for a placement question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.resetQuiz = function() {
 		logDebug("Placement question resetQuiz()");
 		this.loadQuiz();
 	};
 
-	// Set the show correct answer function for Placement Question
+	/**
+	Overload the show correct answer function for a placement question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showCorrectAnswer = function() {
 		logDebug("Placement question showCorrectAnswer()");
 		this.sockets.showAnimation();
 	};
 
-	// Set the check answer function for Placement Question
+	/**
+	Overload the check answer function for a placement question.
+	@param  {void} Nothing
+	@return {boolean} True if correct and false otherwise.
+	*/
 	this.checkAnswer = function() {
 		logDebug("Placement question checkAnswer()");
 		return this.sockets.check();
 	};
 
-	// Plugin call to add the scene
-	this.addScene = function() {
+	/**
+	Adds this scene to the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
+    this.addScene = function() {
         this.plugin.addScene(this.id);
     };
 
-	// Plugin call to move to the next scene
+	/**
+	Changes to the next scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.nextScene = function() {
         this.plugin.nextScene();
     };
 
-	// Plugin call to move to the previous scene
+	/**
+	Changes to the previous scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.prevScene = function() {
         this.plugin.prevScene();
     };
 
-	// Plugin call to move to the set the scene
+	/**
+	Sets the current scene to this one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.setScene = function() {
         this.plugin.setScene(this.getId());
     };
 
-	// Set the number of tries for the question
+	/**
+	Sets the number of tries for this scene.
+	@param  {number} tries The number of tries for this scene
+	@return {void} Nothing
+	*/
     this.setTries = function(tries) {
         if(typeof tries !== "number") {
-            logError("tries must have a value of type 'number'");
             return;
         }
         this.tries = tries;
     };
 
-	// Decrement the number of tries by one
+	/**
+	Decrements the number of tries by one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.decrementTries = function() {
         if(!(this.tries === 0)) {
             this.tries = this.tries - 1;
         }
     };
 
-	// Return the number of tries
+	/**
+	Gets the number of tries for this scene.
+	@param  {void} Nothing
+	@return {number} The number of tries for this scene
+	*/
     this.getTries = function() { return this.tries; };
 
-	// Set the boolean flag of if the question is correct
+	/**
+	Sets if the scene is correct
+	@param  {boolean} correct True if this scene is correct and false otherwise
+	@return {void} Nothing
+	*/
     this.setCorrect = function(correct) {
         if(typeof correct !== "boolean") {
             logError("correct must have a value of type 'boolean'");
@@ -3564,10 +4583,18 @@ function THM_PlacementQuestion (plugin, configuration) {
         this.completed = true;
     };
 
-	// Return the boolean flag of if the question is correct
+	/**
+	Gets if the scene is correct
+	@param  {void} Nothing
+	@return {boolean} True if this scene is correct and false otherwise
+	*/
     this.getCorrect = function() { return this.correct; };
 
-	// Set the boolean flag of if the question is complete
+	/**
+	Sets if the scene is completed
+	@param  {boolean} completed True if this scene is completed and false otherwise
+	@return {void} Nothing
+	*/
     this.setCompleted = function(completed) {
         if(typeof completed !== "boolean") {
             logError("completed must have a value of type 'boolean'");
@@ -3576,10 +4603,18 @@ function THM_PlacementQuestion (plugin, configuration) {
         this.completed = completed;
     };
 
-	// Return the boolean flag of if the question is complete
+	/**
+	Gets if the scene is completed
+	@param  {void} Nothing
+	@return {boolean} True if this scene is completed and false otherwise
+	*/
     this.getCompleted = function() { return this.completed; };
 
-	// Set the boolean flag of if the server has responded
+	/**
+	Sets if the scene status has been recieved by the server
+	@param  {boolean} serverStatus True if this scenes status has been recieved by the server and false otherwise
+	@return {void} Nothing
+	*/
     this.setServerStatus = function(serverStatus) {
         if(typeof serverStatus !== "boolean") {
             logError("serverStatus must have a value of type 'boolean'");
@@ -3588,7 +4623,11 @@ function THM_PlacementQuestion (plugin, configuration) {
         this.serverStatus = serverStatus;
     };
 
-	// Return the boolean flag of if the server has responded
+	/**
+	Gets if the scene status has been recieved by the server
+	@param  {void} Nothing
+	@return {boolean} True if this scenes status has been recieved by the server and false otherwise
+	*/
     this.getServerStatus = function() { return this.serverStatus; };
-};
+}
 THM_PlacementQuestion.prototype = new Osmosis();

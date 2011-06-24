@@ -1,18 +1,32 @@
-//------------------------------------------------------------------------------
-// Little wrapper function used to test is the answer is a number
+/**
+Little wrapper function used to test is the answer is a number
+@class isNumber
+@param  {object} o The object to test if it's a number.
+@return {boolean} True if is a number and false otherwise.
+*/
 function isNumber (o) {
   return ! isNaN (o-0);
 }
 
-//------------------------------------------------------------------------------
-// The concept element built by JSON
+/**
+A custom button class
+@class THM_Label
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The parent layer to add this label to.
+@param  {object} jLabel The JSON definetion of the label.
+@return {void} Nothing
+*/
 function THM_Label (plugin, lyrParent, jLabel) {
 	this.plugin = plugin;
 	this.lyrParent = lyrParent;
 	this.jLabel = jLabel;
 	this.bDropdown = false;
 
-	// Create the label
+	/**
+	Setup the textbox / drop down and add it to a single layer.  Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		// Read the label details from JSON
 		this.x = parseInt(readJSON(this.jLabel.x, "label x","0"), 10);
@@ -56,7 +70,11 @@ function THM_Label (plugin, lyrParent, jLabel) {
 		this.lyrParent.addChild(this.lyrBG)
 	};
 
-	// Subscribe the drop down and clear the color overlay
+	/**
+	Subscribe the drop down and clear the color overlay.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.enable = function() {
 		// Subscribe and reset drop down
 		this.dd.subscribe();
@@ -75,7 +93,11 @@ function THM_Label (plugin, lyrParent, jLabel) {
 		this.lyrColor.addTween("red:0,green:0,blue:0,alpha:0,time:1");
 	};
 
-	// Unsubscribe the drop down and set a grey color overlay
+	/**
+	Unsubscribe the drop down and set a grey color overlay.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.disable = function() {
 		// Unsubscribe and reset drop down
 		this.dd.unsubscribe();
@@ -90,7 +112,11 @@ function THM_Label (plugin, lyrParent, jLabel) {
 		this.lyrColor.addTween("red:0,green:0,blue:0,alpha:0.33,time:1");
 	};
 
-	// Unsubscribe the drop down and set a green color overlay
+	/**
+	Unsubscribe the drop down and set a green color overlay.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showAnswer = function() {
 		// Unsubscribe and set drop down to show the answer
 		this.dd.unsubscribe();
@@ -101,7 +127,11 @@ function THM_Label (plugin, lyrParent, jLabel) {
 		this.lyrColor.addTween("red:0.5,green:1.0,blue:0.45,alpha:0.33,time:1");
 	};
 
-	// Check if the drop down is correct and animate the color overlay
+	/**
+	Check if the drop down is correct and animate the color overlay.
+	@param  {void} Nothing
+	@return {boolean} True is the user answered this label correctly otherwise false.
+	*/
 	this.check = function() {
 		var bResult;
 
@@ -131,8 +161,14 @@ function THM_Label (plugin, lyrParent, jLabel) {
 }
 THM_Label.prototype = new Osmosis();
 
-//------------------------------------------------------------------------------
-// The label map style question built by JSON
+/**
+The label map style question built by JSON
+@class THM_LabelingQuestion
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} configuration The JSON definetion of this question.
+@param  {object} thmDemo The refernce to this demo.
+@return {void} Nothing
+*/
 function THM_LabelingQuestion (plugin, configuration, thmDemo) {
 
 	// Scene specfic values
@@ -158,7 +194,11 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
     this.allLabels = [];
     this.currentLabels = [];
 
-	// endZoomOut - Trigger when the label map is safe the drag around again.
+    /**
+	Trigger when the label map is safe the drag around again.
+	@param  {object} that To protect the scope that is this.  Confusing?  Blame javascript.
+	@return {void} Nothing
+	*/
     this.endZoomOut = function(that) {
 		// Show the drop down menus and allow dragging
 		that.lyrDrop.setVisibility(true);
@@ -168,7 +208,12 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
 		that.thmDemo.hideCurtain();
 	}
 
-	// buttonDown - triggers when the user clicks on the change display button
+	/**
+	Triggers when the user clicks on the change display button.
+	@param  {number} x The x position of the mouse.
+	@param  {number} y The y position of the mouse.
+	@return {void} Nothing
+	*/
 	this.buttonDown = function(x,y) {
 		// Toggle the zoom boolean
 		this.bZoom = !this.bZoom;
@@ -224,9 +269,13 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
 		}
 	}
 
-	// Set the initialize function for a label map question
+	/**
+	Overload the initialize function for a label map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.initQuiz = function() {
-		logDebug("Concept map question initQuiz()");
+		logDebug("Label map question initQuiz()");
 		var i = 0;
 
 		// If no inheritence is specified then create everything from scratch
@@ -354,9 +403,13 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
 		this.bgLayer.addChild(rectInstruction);
 	};
 
-	// Set the display function for a label map question
+	/**
+	Overload the display function for a label map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.loadQuiz = function() {
-		logDebug("Concept map question loadQuiz()");
+		logDebug("Label map question loadQuiz()");
 
 		// Allow dragging and tween the background to the define position
 		this.lyrDrag.subscribe();
@@ -387,9 +440,13 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
 		}
 	};
 
-	// Set the clean up function for a label map question
+	/**
+	Overload the clean up function for a label map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.cleanUp = function() {
-		logDebug("Concept map question cleanUp()");
+		logDebug("Label map question cleanUp()");
 		// Resize the image to it's original size and unsubscribe it
 		this.sprImage.setDimensions(this.intImageWidth, this.intImageHeight);
 		this.lyrDrag.unsubscribe();
@@ -401,24 +458,36 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
 		}
 	};
 
-	// Set the reset function for a label map question
+	/**
+	Overload the reset function for a label map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.resetQuiz = function() {
-		logDebug("Concept map question resetQuiz()");
+		logDebug("Label map question resetQuiz()");
 		this.loadQuiz();
 	};
 
-	// Set the show correct answer function for a label map question
+	/**
+	Overload the show correct answer function for a label map question.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.showCorrectAnswer = function() {
-		logDebug("Concept map question showCorrectAnswer()");
+		logDebug("Label map question showCorrectAnswer()");
 		// Show the answer for all the labels for this question
 		for(var i = this.enableFrom; i < this.enableTo; i++) {
 			this.allLabels[i].showAnswer();
 		}
 	};
 
-	// Set the check answer function for a label map question
+	/**
+	Overload the check answer function for a label map question.
+	@param  {void} Nothing
+	@return {boolean} True if the question is correct and false otherwise.
+	*/
 	this.checkAnswer = function() {
-		logDebug("Concept map question checkAnswer()");
+		logDebug("Label map question checkAnswer()");
 		var bResult = true;
 		// Check all the labels for this question
 		for(var i = this.enableFrom; i < this.enableTo; i++) {
@@ -427,46 +496,77 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
 		return bResult;
 	};
 
-	// Plugin call to add the scene
-	this.addScene = function() {
+	/**
+	Adds this scene to the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
+    this.addScene = function() {
         this.plugin.addScene(this.id);
     };
 
-	// Plugin call to move to the next scene
+	/**
+	Changes to the next scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.nextScene = function() {
         this.plugin.nextScene();
     };
 
-	// Plugin call to move to the previous scene
+	/**
+	Changes to the previous scene in the plugin.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.prevScene = function() {
         this.plugin.prevScene();
     };
 
-	// Plugin call to move to the set the scene
+	/**
+	Sets the current scene to this one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.setScene = function() {
         this.plugin.setScene(this.getId());
     };
 
-	// Set the number of tries for the question
+	/**
+	Sets the number of tries for this scene.
+	@param  {number} tries The number of tries for this scene
+	@return {void} Nothing
+	*/
     this.setTries = function(tries) {
         if(typeof tries !== "number") {
-            logError("tries must have a value of type 'number'");
             return;
         }
         this.tries = tries;
     };
 
-	// Decrement the number of tries by one
+	/**
+	Decrements the number of tries by one.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
     this.decrementTries = function() {
         if(!(this.tries === 0)) {
             this.tries = this.tries - 1;
         }
     };
 
-	// Return the number of tries
+	/**
+	Gets the number of tries for this scene.
+	@param  {void} Nothing
+	@return {number} The number of tries for this scene
+	*/
     this.getTries = function() { return this.tries; };
 
-	// Set the boolean flag of if the question is correct
+	/**
+	Sets if the scene is correct
+	@param  {boolean} correct True if this scene is correct and false otherwise
+	@return {void} Nothing
+	*/
     this.setCorrect = function(correct) {
         if(typeof correct !== "boolean") {
             logError("correct must have a value of type 'boolean'");
@@ -476,10 +576,18 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
         this.completed = true;
     };
 
-	// Return the boolean flag of if the question is correct
+	/**
+	Gets if the scene is correct
+	@param  {void} Nothing
+	@return {boolean} True if this scene is correct and false otherwise
+	*/
     this.getCorrect = function() { return this.correct; };
 
-	// Set the boolean flag of if the question is complete
+	/**
+	Sets if the scene is completed
+	@param  {boolean} completed True if this scene is completed and false otherwise
+	@return {void} Nothing
+	*/
     this.setCompleted = function(completed) {
         if(typeof completed !== "boolean") {
             logError("completed must have a value of type 'boolean'");
@@ -488,10 +596,18 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
         this.completed = completed;
     };
 
-	// Return the boolean flag of if the question is complete
+	/**
+	Gets if the scene is completed
+	@param  {void} Nothing
+	@return {boolean} True if this scene is completed and false otherwise
+	*/
     this.getCompleted = function() { return this.completed; };
 
-	// Set the boolean flag of if the server has responded
+	/**
+	Sets if the scene status has been recieved by the server
+	@param  {boolean} serverStatus True if this scenes status has been recieved by the server and false otherwise
+	@return {void} Nothing
+	*/
     this.setServerStatus = function(serverStatus) {
         if(typeof serverStatus !== "boolean") {
             logError("serverStatus must have a value of type 'boolean'");
@@ -500,7 +616,11 @@ function THM_LabelingQuestion (plugin, configuration, thmDemo) {
         this.serverStatus = serverStatus;
     };
 
-	// Return the boolean flag of if the server has responded
+	/**
+	Gets if the scene status has been recieved by the server
+	@param  {void} Nothing
+	@return {boolean} True if this scenes status has been recieved by the server and false otherwise
+	*/
     this.getServerStatus = function() { return this.serverStatus; };
-};
+}
 THM_LabelingQuestion.prototype = new Osmosis();

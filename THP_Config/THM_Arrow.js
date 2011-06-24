@@ -1,7 +1,11 @@
 var fastMath;
-
-//------------------------------------------------------------------------------
-// A generic object with a background rectangle and label
+/**
+Creates an arrow from a define start point to the end point.  The end point always has an arrow head.
+@class THM_Arrow
+@param  {object} plugin The monocleGL plugin object.
+@param  {object} lyrParent The layer to add the arrow to.
+@return {void} Nothing
+*/
 function THM_Arrow(plugin, lyrParent) {
 	// Setup local varibles
     this.plugin = plugin;
@@ -27,7 +31,11 @@ function THM_Arrow(plugin, lyrParent) {
 		fastMath = new THM_fastMath();
 	}
 
-	// Setup the item and add it to the passed parent
+	/**
+	Setup the arrow and add it to the passed parent.  Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		// Create the 3 lines for the arrow
 		this.lineMain = new Line(this.plugin, 0, 0, 0, 0);
@@ -40,47 +48,80 @@ function THM_Arrow(plugin, lyrParent) {
 		this.lyrParent.addChild(this.lineLeft);
 	};
 
-	// Set the start point of the arrow and redraw the arrow
+	/**
+	Set the start point of the arrow and redraw the arrow.
+	@param  {number} x The new x position of the start point for the arrow.
+	@param  {number} y The new y position of the start point for the arrow.
+	@return {void} Nothing
+	*/
 	this.setStart = function(x,y) {
 		this.pntStart.x = x;
 		this.pntStart.y = y;
 		this.drawArrow();
 	};
 
-	// Set the end point of the arrow and redraw the arrow
+	/**
+	Set the end point of the arrow and redraw the arrow.
+	@param  {number} x The new x position of the end point for the arrow.
+	@param  {number} y The new y position of the end point for the arrow.
+	@return {void} Nothing
+	*/
 	this.setEnd = function(x,y) {
 		this.pntEnd.x = x;
 		this.pntEnd.y = y;
 		this.drawArrow();
 	};
 
-	// Set the thickness of each of the lines
+	/**
+	Set the thickness of each of the lines.
+	@param  {number} thickness The new thickness of all the lines used to create the arrow.
+	@return {void} Nothing
+	*/
 	this.setThickness = function(thickness) {
 		this.lineMain.setThickness(thickness);
 		this.lineRight.setThickness(thickness);
 		this.lineLeft.setThickness(thickness);
 	};
 
-	// Set the color of each of the lines
+	/**
+	Set the color of each of the lines.
+	@param  {number} r The new amount of red in the lines (range 0 to 1).
+	@param  {number} g The new amount of green in the lines (range 0 to 1).
+	@param  {number} b The new amount of blue in the lines (range 0 to 1).
+	@param  {number} a The new amount of alpha in the lines (range 0 to 1).
+	@return {void} Nothing
+	*/
 	this.setColor = function(r,g,b,a) {
 		this.lineMain.setColor(r,g,b,a);
 		this.lineRight.setColor(r,g,b,a);
 		this.lineLeft.setColor(r,g,b,a);
 	};
 
-	// Set the length of the both arrow legs and redraw the arrow
+	/**
+	Set the length of the both arrow legs and redraw the arrow.
+	@param  {number} length The new length of the arrow head legs in pixels.
+	@return {void} Nothing
+	*/
 	this.setLegLength = function(length) {
 		this.numLegLength = length;
 		this.drawArrow();
 	};
 
-	// Set the angle of the both arrow legs and redraw the arrow
+	/**
+	Set the angle of the both arrow legs and redraw the arrow.
+	@param  {number} angle The new angle of the arrow head legs in degrees.
+	@return {void} Nothing
+	*/
 	this.setLegAngle = function(angle) {
 		this.numLegAngle = angle;
 		this.drawArrow();
 	};
 
-	// Draw the arrow based on the start and end point
+	/**
+	Draw the arrow based on the start and end point.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.drawArrow = function() {
 		// Figure out the vector of the arrow
 		this.vecMain.radial = distancePoints(this.pntStart, this.pntEnd);
@@ -118,7 +159,13 @@ function THM_Arrow(plugin, lyrParent) {
 }
 THM_Object.prototype = new Osmosis();
 
-// Figure out the arc tan of two points in degrees without using the slow Math librarys
+/**
+Figure out the arc tan of two points in degrees without using the slow Math librarys.
+@class piecewiseArcTan
+@param  {object} pointA The frist point to get the arc tan of.
+@param  {object} pointB The second point to get the arc tan of.
+@return {number} The angle of the two points passed in.
+*/
 function piecewiseArcTan(pointA, pointB) {
 	// Figure out the x and y deltas
 	var dx = pointA.x - pointB.x;

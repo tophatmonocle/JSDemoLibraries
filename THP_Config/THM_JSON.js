@@ -1,5 +1,14 @@
 //------------------------------------------------------------------------------
-// Safely read JSON objects within a browser with out stopping on error
+//
+
+/**
+Safely read JSON objects within a browser with out stopping on error
+@class readJSON
+@param  {object} jObject The JSON variable we are trying to read.
+@param  {string} strType The text to display when jObject is undefined.
+@param  {object} objDefault The default variable to return when jObject is undefined.
+@return {object} Returns the value of jObject if defined or objDefault when jObject is undefined.
+*/
 function readJSON(jObject, strType, objDefault) {
 	var strError = "";
 	var rObject = null;
@@ -13,7 +22,7 @@ function readJSON(jObject, strType, objDefault) {
 
 	// Check if JSON object exists before reading it
 	if(jObject === undefined) {
-		logError("ERROR reading JSON " + strError);
+		logError("WARNING could not read JSON " + strError);
 		rObject = objDefault;
 	} else {
 		rObject = jObject;

@@ -1,5 +1,14 @@
-//------------------------------------------------------------------------------
-// A custom button class
+/**
+A custom button class
+@class THM_CustomButton
+@param  {object} plugin The monocleGL plugin object.
+@param  {string} text The text to display in the button.
+@param  {number} x The x position of the button
+@param  {number} y The y position of the button
+@param  {number} width The width of the button
+@param  {number} height The height of the button
+@return {void} Nothing
+*/
 function THM_CustomButton(plugin, text, x, y, width, height){
 	this.plugin = plugin;
 	this.width = width;
@@ -8,7 +17,11 @@ function THM_CustomButton(plugin, text, x, y, width, height){
 	this.y = y;
 	this.text = text;
 
-	// Create the button
+	/**
+	Setup the custom button and add it to a single layer.  Called internally during creation and only needs to called once.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.create = function() {
 		// Define all the colors
 		this.borderCol = new THM_Color(0,0,0,1);
@@ -42,46 +55,89 @@ function THM_CustomButton(plugin, text, x, y, width, height){
 		this.layer.addChild(this.label);
 	};
 
-	// Set the border color
+	/**
+	Sets the buttons border color.
+	@param  {number} r The new amount of red (range 0 to 1).
+	@param  {number} g The new amount of green (range 0 to 1).
+	@param  {number} b The new amount of blue (range 0 to 1).
+	@param  {number} a The new amount of alpha (range 0 to 1).
+	@return {void} Nothing
+	*/
 	this.setBorderColor = function(r, g, b, a){
 		this.borderCol.setColor(r, g, b, a);
 		this.background.setBorderColor(r, g, b, a);
 	};
 
-	// Set the background color
+	/**
+	Sets the buttons background color.
+	@param  {number} r The new amount of red (range 0 to 1).
+	@param  {number} g The new amount of green (range 0 to 1).
+	@param  {number} b The new amount of blue (range 0 to 1).
+	@param  {number} a The new amount of alpha (range 0 to 1).
+	@return {void} Nothing
+	*/
 	this.setColor = function(r, g, b, a){
 		this.bgCol.setColor(r, g, b, a);
 		this.background.setColor(r, g, b, a);
 	};
 
-	// Set the text caption color
+	/**
+	Sets the buttons text caption color.
+	@param  {number} r The new amount of red (range 0 to 1).
+	@param  {number} g The new amount of green (range 0 to 1).
+	@param  {number} b The new amount of blue (range 0 to 1).
+	@param  {number} a The new amount of alpha (range 0 to 1).
+	@return {void} Nothing
+	*/
 	this.setCaptionColor = function(r, g, b, a){
 		this.textColor.setColor(r, g, b, a);
 		this.label.setCaptionColor(r, g, b, a);
 	};
 
-	// Set the up callback of the invisible sprite
+	/**
+	Add a callback to be triggered whenever the invisible sprite has the mouse click up on it.
+	@param  {object} obj The object for JavaScript to call the callback on.
+	@param  {string} func The name of the function to call when a callback occurs.
+	@return {void} Nothing
+	*/
 	this.upCallback = function(object, func){
 		this.inv.upCallback(object, func);
 	};
 
-	// Set the down callback of the invisible sprite
+	/**
+	Add a callback to be triggered whenever the invisible sprite has the mouse click down on it.
+	@param  {object} obj The object for JavaScript to call the callback on.
+	@param  {string} func The name of the function to call when a callback occurs.
+	@return {void} Nothing
+	*/
 	this.downCallback = function(object, func){
 		this.inv.downCallback(object, func);
 	};
 
-	// Set the text of the label
+	/**
+	Sets the string that will be displayed in the label.
+	@param  {string} text The string to be displayed inside label.
+	@return {void} Nothing
+	*/
 	this.setText = function(text){
 		this.text = text;
 		this.label.setText(this.text);
 	};
 
-	// Subscribe the invisible sprite
+	/**
+	Notifies the plugin that the invisible sprite wants to recieve events.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.subscribe = function(){
 		this.inv.subscribe();
 	};
 
-	// Unsubscribe the invisible sprite
+	/**
+	Notifies the plugin that the invisible sprite does NOT want to recieve events.
+	@param  {void} Nothing
+	@return {void} Nothing
+	*/
 	this.unsubscribe = function(){
 		this.inv.unsubscribe();
 	};
