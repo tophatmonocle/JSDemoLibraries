@@ -10,6 +10,7 @@ function THM_Socket(x, y, objAnswer) {
 	// Local socket varibles
 	this.pntCenter = new Point(x,y);
 	this.objAnswer = objAnswer;
+	objAnswer.hasSocket = true;
 	this.objItem = null;
 }
 
@@ -127,6 +128,8 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 				this.arrSocket[i].objAnswer.addTween("x:"+newX+",y:"+newY+",time:1");
 			}
 		}
+		
+		this.stack.returnIncorrects();
 	};
 
 	/**
@@ -149,6 +152,7 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 				bResult = false;
 			}
 		}
+		this.stack.showIncorrects();
 		return bResult;
 	};
 
@@ -277,7 +281,8 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 			// Set extra stack varibles for tracking where the object is
 			this.arrStack[i].inStack = true;
 			this.arrStack[i].objSocket = null;
-
+			this.arrStack[i].hasSocket = false;		// is there any socket associated (if no, it will always incorrect)
+			
 			// Snap object to it's origin position
 			this.arrStack[i].setPosition(this.arrStack[i].originX, this.arrStack[i].originY);
 
@@ -364,19 +369,28 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 	@return {void} Nothing
 	*/
 	this.enable = function() {
-		var last = this.arrStack[0];
-		for(var i = 0; i < this.arrStack.length; i++) {
-			if(this.arrStack[i].inStack) {
-				// Record the top object in stack
-				last = this.arrStack[i];
-				this.arrStack[i].unsubscribe();
-			} else {
-				// Subscribe objects if not in stack
-				this.arrStack[i].subscribe();
-			}
+		if (this.free)
+		{
+			for(var i = 0; i < this.arrStack.length; i++) {
+			this.arrStack[i].subscribe();
 		}
-		// Subscribe the top the object in the stack
-		last.subscribe();
+		}
+		else
+		{
+			var last = this.arrStack[0];
+			for(var i = 0; i < this.arrStack.length; i++) {
+				if(this.arrStack[i].inStack) {
+					// Record the top object in stack
+					last = this.arrStack[i];
+					this.arrStack[i].unsubscribe();
+				} else {
+					// Subscribe objects if not in stack
+					this.arrStack[i].subscribe();
+				}
+			}
+			// Subscribe the top the object in the stack
+			last.subscribe();
+		}
 	};
 
 	/**
@@ -389,6 +403,31 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 			this.arrStack[i].unsubscribe();
 		}
 	};
+
+	/**
+	Blink items that has no corresponding socket (ie confusing items) with red.
+	*/
+	this.showIncorrects = function()
+	{
+		for(var i = 0; i < this.arrStack.length; i++) {
+			if (this.arrStack[i].hasSocket == false)
+				this.arrStack[i].showCorrect(false);
+		}
+	};
+	
+	/**
+	Move items that has no corresponding socket (ie confusing items) to its starting positions.
+	*/
+	this.returnIncorrects = function()
+	{
+		for(var i = 0; i < this.arrStack.length; i++) {
+			if (this.arrStack[i].hasSocket == false) {
+				//this.arrStack[i].setPosition(this.arrStack[i].originX, this.arrStack[i].originY);
+				this.arrStack[i].addTween("x:"+this.arrStack[i].originX+",y:"+this.arrStack[i].originY+",time:1");
+				this.arrStack[i].inStack = true;
+			}
+		}
+	}
 
 	this.create();
 }
@@ -445,6 +484,8 @@ function THM_PlacementQuestion (plugin, configuration) {
 	this.position.layoutWidth = parseInt(readJSON(configuration.width, "configuration layout width","440"),10);
 	this.position.layoutHeight = parseInt(readJSON(configuration.height, "configuration layout height","220"),10);
 
+	this.free_stack = readJSON(configuration.free_stack, "free stack", "false").toLowerCase() == "true";
+	
 	// Set the stack and stocket to be null for now
 	this.stack = null;
 	this.sockets = null;
@@ -510,6 +551,7 @@ function THM_PlacementQuestion (plugin, configuration) {
 		this.stack = new THM_Stack(this.plugin, this.bgStack, this.jStack, this.position);
 		this.stack.funcDrag = this.objDrag;
 		this.stack.funcScope = this;
+		this.stack.free = this.free_stack;
 
 		// Build up the sockets
 		this.sockets = new THM_Sockets(this.plugin, this.bgSockets, this.jSockets, this.stack, this.maxDistance);
