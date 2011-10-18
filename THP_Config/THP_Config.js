@@ -3991,12 +3991,75 @@ Socket Item data structure
 @param  {object} objAnswer The the object that should be in the socket for the answer to be correct.
 @return {void} Nothing
 */
-function THM_Socket(x, y, objAnswer) {
+function THM_Socket(x, y, arrAnswers) {
 	// Local socket varibles
 	this.pntCenter = new Point(x,y);
-	this.objAnswer = objAnswer;
-	objAnswer.hasSocket = true;
-	this.objItem = null;
+	//this.objAnswer = objAnswer;
+	this.arrAnswers = arrAnswers;
+	//objAnswer.hasSocket = true;
+	//this.objItem = null;
+	this.arrItems = [];
+	this.maxItems = 1;	// default: the single item
+	this.arrangeType = "diagonal";
+	
+	this.canAdd = function()
+	{
+		return this.arrItems.length < this.maxItems;
+	}
+	
+	this.addItem = function(item)
+	{
+		if (this.canAdd())
+		{
+			this.arrItems.push(item);
+			item.inStack = false;
+			item.objSocket = this;
+			this.rearrange();
+		}
+		return item;
+	}
+	
+	this.removeItem = function(item)
+	{
+		var index = this.arrItems.indexOf(item);
+		if (index >= 0)
+		{
+			this.arrItems.splice(index, 1);
+			item.objSocket = null;
+			this.rearrange();
+		}
+		return item;
+	}
+	
+	this.rearrange = function()
+	{
+		if (this.maxItems == 1 && this.arrItems.length > 0)
+		{
+			this.arrItems[0].setPosition(this.pntCenter.x - this.arrItems[0].width * 0.5, 
+										 this.pntCenter.y - this.arrItems[0].height * 0.5);
+		}
+		else
+			switch(this.arrangeType)
+			{
+				case "vertical":
+					for(i = 0; i < this.arrItems.length; i++)
+						this.arrItems[i].setPosition(this.pntCenter.x + (i % this.rowSize) * this.offsetX - this.arrItems[i].width * 0.5, 
+													 this.pntCenter.y + Math.floor(i / this.rowSize) * this.offsetY - this.arrItems[i].height * 0.5);
+					break;
+				
+				case "horizontal":
+					for(i = 0; i < this.arrItems.length; i++)
+						this.arrItems[i].setPosition(this.pntCenter.x + Math.floor(i / this.rowSize) * this.offsetX - this.arrItems[i].width * 0.5, 
+													 this.pntCenter.y + (i % this.rowSize) * this.offsetY - this.arrItems[i].height * 0.5);
+					break;
+				
+				case "diagonal":
+					for(i = 0; i < this.arrItems.length; i++)
+						this.arrItems[i].setPosition(this.pntCenter.x + i * this.offsetX - this.arrItems[i].width * 0.5, 
+													 this.pntCenter.y + i * this.offsetY - this.arrItems[i].height * 0.5);
+					break;
+			}
+	}
 }
 
 /**
@@ -4039,29 +4102,65 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 
 		// The object pointer for the correct answer
 		var objAnswer = null;
+		var arrAnswers = [];
 
 		// Add each socket to the socket list
 		for(var i = 0; i < this.jSockets.length; i++) {
 			// Read x, y and the correct answer from JSON
-			socketX = parseInt(readJSON(jSockets[i].point_x, "socket " + i + " x","0"),10);
-			socketY = parseInt(readJSON(jSockets[i].point_y, "socket " + i + " y","0"),10);
-			strName = readJSON(jSockets[i].correct, "socket " + i + " correct answer","untitled");
-			objAnswer = this.stack.getName(strName);
-			this.arrSocket.push(new THM_Socket(socketX, socketY, objAnswer));
-
+			socketX = parseInt(readJSON(jSockets[i].point_x, "socket " + i + " x","0"));
+			socketY = parseInt(readJSON(jSockets[i].point_y, "socket " + i + " y","0"));
+			
+			//strName = readJSON(jSockets[i].name, "socket " + i + " name", "untitled" + i);
+			arrCorrect = readJSON(jSockets[i].correct, "socket " + i + " correct answer",[]);				// if no "correct" parameter defined, socket will be assumed as "empty".
+			arrAnswers = [];
+			if (arrCorrect instanceof Array)
+			{
+				for(j = 0; j < arrCorrect.length; j++)
+				{
+					arrAnswers[j] = this.stack.getObjectByName(arrCorrect[j]);
+				}
+			}
+			else
+			{
+				objAnswer = this.stack.getObjectByName(arrCorrect);	// arrCorrect is a string
+				arrAnswers = [objAnswer];
+			}
+			var socket = new THM_Socket(socketX, socketY, arrAnswers);
+			this.arrSocket.push(socket);
+			
+			var maxItems = Math.max(parseInt(readJSON(jSockets[i].max_items, "socket " + i + " max_items", "1")), arrAnswers.length);
+			if (maxItems > 1)
+			{
+				socket.maxItems = maxItems;
+				socket.arrangeType = readJSON(jSockets[i].arrange_type, "diagonal");
+				socket.offsetX = parseInt(readJSON(jSockets[i].offset_x, "socket " + i + " offset_x", "10"));
+				socket.offsetY = parseInt(readJSON(jSockets[i].offset_y, "socket " + i + " offset_y", "20"));
+				if (socket.arrangeType == "vertical")
+					socket.rowSize = parseInt(readJSON(jSockets[i].columns, "1"));
+				else if (socket.arrangeType == "horizontal")
+					socket.rowSize = parseInt(readJSON(jSockets[i].rows, "1"));
+				else
+					socket.arrangeType = "diagonal";	// filter any incorrect variants
+				
+				socket.requireFull = readJSON(jSockets[i].require_full, "socket " + i + " require_full", "false").toString().toLowerCase() == "true";
+				
+			}
+			
 			// Check JSON for a background image
 			strImage = readJSON(jSockets[i].image, "socket " + i + " image","");
 			if(strImage !== ""){
 				// Calculate where the image should appear on the screen
-				intWidth = parseInt(readJSON(jSockets[i].image_width, "socket " + i + " image width","0"), 10);
-				intHeight = parseInt(readJSON(jSockets[i].image_height, "socket " + i + " image height","0"), 10);
+				intWidth = parseInt(readJSON(jSockets[i].image_width, "socket " + i + " image width","0"));
+				intHeight = parseInt(readJSON(jSockets[i].image_height, "socket " + i + " image height","0"));
 				intX = socketX - (intWidth * 0.5);
 				intY = socketY - (intHeight * 0.5);
-
+				
 				// If an image is found then load resource and add to parent
 				sprImage = new Sprite(this.plugin, mediaURL + slugUUID + strImage, intX, intY, intWidth, intHeight);
 				this.lyrParent.addChild(sprImage);
 			}
+			
+			
 		}
 	};
 
@@ -4072,7 +4171,9 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 	*/
 	this.reset = function() {
 		for(var i = 0; i < this.arrSocket.length; i++) {
-			this.arrSocket[i].objItem = null;
+			//this.arrSocket[i].arrItems = null;
+			while(this.arrSocket[i].arrItems.length)
+				this.removeItem(this.arrSocket[i].arrItems[0]);
 		}
 	};
 
@@ -4083,9 +4184,9 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 	*/
 	this.unsocket = function(objItem) {
 		for(var i = 0; i < this.arrSocket.length; i++) {
-			if(this.arrSocket[i].objItem === objItem) {
-				this.arrSocket[i].objItem = null;
-			}
+			if(this.arrSocket[i].arrItems.indexOf(objItem) >= 0)
+				this.arrSocket[i].removeItem(objItem);
+			
 		}
 	};
 
@@ -4097,20 +4198,28 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 	this.showAnimation = function() {
 		var newX;
 		var newY;
-
-		// Go through each socket and check if it's in the correct place
-		for(var i = 0; i < this.arrSocket.length; i++) {
-
-			// Flash the object green if correct and red otherwise
-			this.arrSocket[i].objAnswer.showCorrect(true);
-
-			// Check if the object is in the correct location
-			if(this.arrSocket[i].objAnswer !== this.arrSocket[i].objItem) {
-
-				// If the object isn't in the right location then tween it to be correct
-				newX = this.arrSocket[i].pntCenter.x - (this.arrSocket[i].objAnswer.width * 0.5);
-				newY = this.arrSocket[i].pntCenter.y - (this.arrSocket[i].objAnswer.height * 0.5);
-				this.arrSocket[i].objAnswer.addTween("x:"+newX+",y:"+newY+",time:1");
+		var item;
+		
+		this.stack.unmarkAll();
+		
+		for(var i = 0; i < this.arrSocket.length; i++)
+		{
+			var socket = this.arrSocket[i];
+			for(var j = 0; j < socket.arrAnswers.length; j++)
+			{
+				item = socket.arrAnswers[j];
+				if (socket.arrAnswers[j].objSocket != socket && socket.arrAnswers[j].marker != true)
+				{
+					
+					var oldX = item.x;
+					var oldY = item.y;
+					socket.addItem(item);
+					var newX = item.x;
+					var newY = item.y;
+					item.setPosition(oldX, oldY);
+					item.addTween("x:"+newX+",y:"+newY+",time:1");
+				}
+				this.stack.markObject(item, true);
 			}
 		}
 		
@@ -4125,17 +4234,38 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 	this.check = function() {
 		// Setup boolean flag
 		var bResult = true;
-
-		// Check if each socket is correct
-		for(var i = 0; i < this.arrSocket.length; i++) {
-			// Flash the object green if correct and red otherwise
-			if(this.arrSocket[i].objAnswer === this.arrSocket[i].objItem) {
-				this.arrSocket[i].objAnswer.showCorrect(true);
-			} else {
-				this.arrSocket[i].objAnswer.showCorrect(false);
-				// even if one object is incorrect then everything is incorrect
-				bResult = false;
+		
+		this.stack.unmarkAll();
+		
+		//for each socket...
+		for(var i = 0; i < this.arrSocket.length; i++)
+		{
+			var socket = this.arrSocket[i];
+			var arrAnswers = socket.arrAnswers.slice();
+			
+			if (socket.requireFull && socket.arrAnswers.length != socket.arrItems.length)
+				bResult = false;	// socket is not fully charged with items
+			
+			// for each item in socket[i] we need to check is that item present in correct answer
+			for (var j = 0; j < socket.arrItems.length; j++)
+			{
+				var index = arrAnswers.indexOf(socket.arrItems[j]);
+				if (index >= 0)
+				{
+					this.stack.markObject(socket.arrItems[j], true);
+					socket.arrItems[j].showCorrect(true);
+					arrAnswers.splice(index, 1);
+				}
+				else
+				{
+					this.stack.markObject(socket.arrItems[j], false);
+					// even if one object is incorrect then everything is incorrect
+					bResult = false;
+				}
 			}
+			
+			if (arrAnswers.length == socket.arrAnswers.length && socket.arrAnswers.length > 0)		// no correct items in the slot. It's not good :)
+				bResult = false;
 		}
 		this.stack.showIncorrects();
 		return bResult;
@@ -4169,7 +4299,7 @@ function THM_Sockets(plugin, lyrParent, jSockets, stack, maxDist) {
 			length = (xTemp * xTemp) + (yTemp * yTemp);
 
 			// If the length is less then the current lowest record it
-			if(length < lowest && this.arrSocket[i].objItem === null) {
+			if(length < lowest && this.arrSocket[i].canAdd()) {
 				lowest = length;
 				closest = i;
 			}
@@ -4223,7 +4353,7 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 		var reorder = [];
 		var loopBreaker = 0;
 		var bRandom = false;
-
+		
 		// Setup array for the random stack order
 		for(var i = 0; i < this.jStack.length; i++ ) {
 			reorder[i] = i;
@@ -4260,13 +4390,29 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 			this.arrStack[i].lyrItem.addDropCallback(this.arrStack[i], "stopDrag");
 
 			// Set the origin base on it's the stack X and Y parameters
-			this.arrStack[i].originX = this.pos.stackX + (i * this.pos.stackOffsetX);
-			this.arrStack[i].originY = this.pos.stackY + (i * this.pos.stackOffsetY);
-
+			switch(this.pos.stackArrangeType)
+			{
+				case "vertical":
+					this.arrStack[i].originX = this.pos.stackX + (i % this.pos.rowSize) * this.pos.stackOffsetX;
+					this.arrStack[i].originY = this.pos.stackY + Math.floor(i / this.pos.rowSize) * this.pos.stackOffsetY;
+					break;
+				
+				case "horizontal":
+					this.arrStack[i].originX = this.pos.stackX + Math.floor(i / this.pos.rowSize) * this.pos.stackOffsetX;
+					this.arrStack[i].originY = this.pos.stackY + (i % this.pos.rowSize) * this.pos.stackOffsetY;
+					break;
+				
+				default:
+					this.arrStack[i].originX = this.pos.stackX + (i * this.pos.stackOffsetX);
+					this.arrStack[i].originY = this.pos.stackY + (i * this.pos.stackOffsetY);
+					break;
+				
+			}
+			
 			// Set extra stack varibles for tracking where the object is
 			this.arrStack[i].inStack = true;
 			this.arrStack[i].objSocket = null;
-			this.arrStack[i].hasSocket = false;		// is there any socket associated (if no, it will always incorrect)
+			//this.arrStack[i].hasSocket = false;		// is there any socket associated (if no, it will always incorrect)
 			
 			// Snap object to it's origin position
 			this.arrStack[i].setPosition(this.arrStack[i].originX, this.arrStack[i].originY);
@@ -4296,7 +4442,7 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 	@param  {string} name The name of the object we're looking for.
 	@return {object} Returns the object reference if found and undefined otherwise.
 	*/
-	this.getName = function(name) {
+	this.getObjectByName = function(name) {
 		for(var i = 0; i < this.arrStack.length; i++) {
 			// If the passed name matches a stack item then return the pointer
 			if(this.arrStack[i].strName === name) {
@@ -4343,6 +4489,8 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 		this.index = this.arrStack.length - 1;
 		for(var i = 0; i < this.arrStack.length; i++) {
 			this.arrStack[i].setPosition(this.arrStack[i].originX, this.arrStack[i].originY);
+			if (this.arrStack[i].objSocket != null)
+				this.arrStack[i].objSocket.removeItem(this.arrStack[i]);
 			this.arrStack[i].inStack = true;
 		}
 		this.enable();
@@ -4395,7 +4543,7 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 	this.showIncorrects = function()
 	{
 		for(var i = 0; i < this.arrStack.length; i++) {
-			if (this.arrStack[i].hasSocket == false)
+			if (this.arrStack[i].marker == false)
 				this.arrStack[i].showCorrect(false);
 		}
 	};
@@ -4406,14 +4554,38 @@ function THM_Stack(plugin, lyrParent, jStack, position) {
 	this.returnIncorrects = function()
 	{
 		for(var i = 0; i < this.arrStack.length; i++) {
-			if (this.arrStack[i].hasSocket == false) {
+			if (this.arrStack[i].marker == false) {
 				//this.arrStack[i].setPosition(this.arrStack[i].originX, this.arrStack[i].originY);
 				this.arrStack[i].addTween("x:"+this.arrStack[i].originX+",y:"+this.arrStack[i].originY+",time:1");
 				this.arrStack[i].inStack = true;
 			}
 		}
 	}
-
+	
+	/**
+	Marks object as correctly/incorrectly placed. Used in checkAnswer() and showCorrectAnswer() operations.
+	If object marked as correct, any tries to mark as incorrect will be ignored - until unmarkAll() method call.
+	@param  {object}  name      The object or the name of object that should be marked
+	@param  {boolean} boolMark  The boolean mark (is this object correctly/incorrectly placed)
+	@return {void} Nothing
+	*/
+	this.markObject = function(name, bMark)
+	{
+		var obj;
+		if (typeof name == "string")
+			obj = this.getObjectByName(name);
+		else
+			obj = name;
+		if (typeof obj != "undefined" && obj.marker != true)
+			obj.marker = bMark;
+	}
+	
+	this.unmarkAll = function()
+	{
+		for(i = 0; i < this.arrStack.length; ++i)
+			this.arrStack[i].marker = false;
+	}
+	
 	this.create();
 }
 
@@ -4457,6 +4629,14 @@ function THM_PlacementQuestion (plugin, configuration) {
 	this.position.stackY = parseInt(readJSON(configuration.stack_y, "configuration stack y","50"),10);
 	this.position.stackOffsetX = parseInt(readJSON(configuration.stack_offset_x, "configuration stack offset x","4"),10);
 	this.position.stackOffsetY = parseInt(readJSON(configuration.stack_offset_y, "configuration stack offset y","4"),10);
+	this.position.stackArrangeType = readJSON(configuration.stack_arrange_type, "configuration stack arrange type", "diagonal");
+	if (this.position.stackArrangeType == "vertical")
+		this.position.rowSize = parseInt(readJSON(configuration.stack_columns, "configuration stack columns", "1"));
+	else if (this.position.stackArrangeType == "horizontal")
+		this.position.rowSize = parseInt(readJSON(configuration.stack_rows, "configuration stack rows", "1"));
+	else
+		this.position.stackArrangeType = "diagonal";	// filter any incorrect variants
+	
 	this.maxDistance = parseInt(readJSON(configuration.max_distance, "configuration maximum snap distance","75"),10);
 
 	// Load the JSON stack and sockets
@@ -4469,7 +4649,7 @@ function THM_PlacementQuestion (plugin, configuration) {
 	this.position.layoutWidth = parseInt(readJSON(configuration.width, "configuration layout width","440"),10);
 	this.position.layoutHeight = parseInt(readJSON(configuration.height, "configuration layout height","220"),10);
 
-	this.free_stack = readJSON(configuration.free_stack, "free stack", "false").toLowerCase() == "true";
+	this.free_stack = readJSON(configuration.stack_free, "free stack", "false").toLowerCase() == "true";
 	
 	// Set the stack and stocket to be null for now
 	this.stack = null;
@@ -4508,8 +4688,9 @@ function THM_PlacementQuestion (plugin, configuration) {
 				newY = this.sockets.arrSocket[numResult].pntCenter.y - (this.stack.arrStack[numItem].height * 0.5);
 
 				// Record that the object is in the socket so another object can't be placed inside
-				this.sockets.arrSocket[numResult].objItem = this.stack.arrStack[numItem];
-				this.stack.snap(numItem, newX, newY);
+				//this.stack.snap(numItem, newX, newY);
+				this.sockets.arrSocket[numResult].addItem(this.stack.arrStack[numItem]);
+				this.stack.enable();
 			}
 		}
 	};
